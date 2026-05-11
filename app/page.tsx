@@ -59,6 +59,18 @@ export default function Page() {
             />
           </div>
         )}
+
+        <button
+          onClick={async () => {
+            const formData = new FormData();
+            formData.append("budget", budget);
+            if (photo) formData.append("photo", photo);
+            await fetch("/api/save", { method: "POST", body: formData });
+          }}
+          className="mt-8 bg-green-700 text-white text-lg font-medium px-6 py-2 rounded-lg hover:bg-green-800 transition-colors"
+        >
+          Submit
+        </button>
       </main>
     </>
   );

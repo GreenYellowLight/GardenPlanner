@@ -1,0 +1,2983 @@
+openapi: 3.0.1
+info:
+  title: Query Item
+  description: "The Query Item API is a simple query tool, to retrieve information about items and their locations within a store.\n\n## Security\n\nDepending on the scope held, more or less functionality is available at an endpoint. There are further access controls in place to ensure the scope of the item inventory functionality is within a bounds suitable for the client making the request.\n\n### itm:details\nCan be used to get the item information we have on file for a country\n\nThe Item Query is built following the HATEOAS guidelines.\nWhen using the api, the client should start by first calling the `discovery` operation to get a list of possible links these links can then be followed into perform functions.\n\nIf no correlation token is provided when using this service, it will generate a token for you in the header response."
+  termsOfService: https://developer.api.bunnings.com.au/terms
+  contact:
+    name: Developer
+    email: developer@bunnings.com.au
+  version: v1.4
+servers:
+  - url: https://item.api.bunnings.com.au/item
+    description: Production API
+  - url: https://item.stg.api.bunnings.com.au/item
+    description: Test is periodically scrubbed of data.
+  - url: https://item.sandbox.api.bunnings.com.au/item
+    description: Sandbox is periodically cleaned regenerated
+paths:
+  '/detail/{countryCode}/{itemNumber}':
+    get:
+      tags:
+        - Items
+      summary: Retrieves Item with details. (Auth itm:details)
+      description: 'Retrieves the ItemNumber, Description, FamilyTree, UnspscCode, StartDate, EndDate, LastUpdate, TaxInformation,ItemType, MinimumGrades, SaleUnitOfMeasure, ProductOffer, Barcodes, Sourcing, ZoningInformation, RatingsRiskAndCompliance, UsageAttributes.'
+      operationId: ITM:003/detail/CountryCode/ItemNumber/GET
+      parameters:
+        - name: countryCode
+          in: path
+          description: the ISO 3166-1 Alpha-2 code for the country the item requested belongs to. currently only Australia AU or New Zealand NU
+          required: true
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - name: itemNumber
+          in: path
+          description: item number of item
+          required: true
+          schema:
+            type: string
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+        - name: $select
+          in: query
+          description: "Select can optionally be used to project only the required properties of the entity/entities from the server.\n- list required properties separated with a ','.\n- property names are case insensitive.\n- '\\\\*' can be used as a wild card for any property.\n- use '/' to address complex type properties.\n\nexample: $select=name,address/state,contact/*/phoneNumber"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          headers:
+            ETag:
+              description: An ETag of the resource
+              schema:
+                type: string
+                description: An ETag of the resource
+                format: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              examples:
+                Default:
+                  value: {"itemNumber":"2582847","brand":"Branch","comparisonUom":{"comparisonUnit":0,"comparisonUnitOfMeasure":"m"},"description":{"sectionDescription":"CUBE INSERT FLEXI STORAGE","productDescription":"33X33X27MM WINE RACK BLACK"},"familyTree":{"iD":"13266","nodes":[{"name":"CATEGORY","level":1,"value":"PAINTING AND STORAGE"},{"name":"DEPARTMENT","level":2,"value":"STORAGE AND ORGANISATION D"},{"name":"SUB_DEPARTMENT","level":3,"value":"WARDROBE ORGANISATION SD"},{"name":"CLASS","level":4,"value":"UTILITY STORAGE CL"},{"name":"SUB_CLASS","level":5,"value":"CUBE STORAGE SC"}]},"unspscCode":"24112401","startDate":"2013-03-05T13:32:49Z","endDate":"2013-04-05T13:32:49Z","lastUpdate":"2019-03-14T06:08:33Z","taxInformation":{"taxCode":"P1AU","taxRate":10},"itemType":"RETAIL","minimumGrades":[{"locationType":"Warehouse","grade":"C*"}],"saleUnitOfMeasure":"Each","productOffer":"Standard","barcodes":[{"number":"9341136008791","level":"Consumer","packaging":[{"part":1,"dimension":{"unitOfMeasure":"MM","length":340,"width":280,"height":55},"volume":{"unitOfMeasure":"M3","value":0.0052},"weight":{"unitOfMeasure":"KG","net":3.37,"gross":3.37}}],"hierarchy":{"childBarcode":"ABC1234456670","childQuantity":34,"baseUnitBarcode":"ABC1234567890","baseUnitQuantity":56},"AdditionalDescription":"This is additional description."}],"sourcing":{"suppliers":[{"jurisdiction":"Domestic","supplierCode":"str1234","startDate":"2012-12-13T12:12:12Z","endDate":"2012-12-13T12:12:12Z","packQty":123.45,"packUOM":"125","supplierBarcodes":[{"primary":false,"number":"str12340","level":"1","packaging":[{"part":0,"dimension":{"unitOfMeasure":"Kg","length":2,"width":3,"height":2},"volume":{"unitOfMeasure":"lt","value":2},"weight":{"unitOfMeasure":"kg","net":2.5,"gross":3}}],"hierarchy":{"childBarcode":"Consumer","childQuantity":1,"baseUnitBarcode":"Case12345","baseUnitQuantity":2},"AdditionalDescription":"The description"}],"countriesOfOrigin":[{"country":"st","factory":"str1234"}]}],"overridingSuppliers":[{"reason":"reason","supplierCode":"str1234","startDate":"2012-12-13T12:12:12Z","endDate":"2012-12-13T12:12:12Z","packQty":123.45,"supplierBarcodes":[{"primary":false,"number":"str12340","level":"1","packaging":[{"part":0,"dimension":{"unitOfMeasure":"Kg","length":2,"width":3,"height":2},"volume":{"unitOfMeasure":"lt","value":2},"weight":{"unitOfMeasure":"kg","net":2.5,"gross":3}}],"hierarchy":{"childBarcode":"Consumer","childQuantity":1,"baseUnitBarcode":"Case12345","baseUnitQuantity":2},"AdditionalDescription":"The description"}],"countriesOfOrigin":[{"country":"st","factory":"str1234"}]}]},"zoningInformation":[{"retailZone":"AU RZ 4","region":"SA","status":"Live","pendingStatus":{"status":"str1234","date":"2012-12-13T12:12:12Z"},"restrictions":[{"type":"RESTRICTED","locations":{"location":["AU"]},"locationRestrictions":"NONE","saleQuantity":{"iD":"324324","alertBaseMessage":"This is alert based message","alertCustomerMessage":"This is alert based message","restrictionSizing":{"maxQuantity":300,"maxLength":20},"validTransactions":{"transaction":"SALE"}},"minimumAge":30}],"fulfilmentDetails":{"deliveryType":{"code":"MET_PARCEL","description":"Metro Parcel"},"freightType":{"code":"MET_PARCEL","description":"Metro Parcel"},"isDirectDelivery":false,"leadTimes":{"supplierDispatch":"3","supplierToBunnings":"3","supplierToCustomer":"2","bunningsDispatch":"1"}},"webCommerceAttributes":{"visible":true,"transactable":true,"inStorePickup":true,"AvailableForDelivery":true,"comment":"Click and Collect/Deliver"}}],"ratingsRiskAndCompliance":{"highRisk":"true","supplierDeclarationsOfConformity":[{"Description":"str1234","URL":"https://www.tempUri.Org"}],"weightRating":{"unitOfMeasure":"str1234","value":123.45},"safetyStandards":{"aCCCMandatoryStandard":"true","standards":[{"standardName":"str1234","referenceNumber":"str1234"}],"safetyDataSheet":{"Description":"This description","URL":"https://www.tempUri.Org"}},"dangerousGood":{"class":"str1234","classPackagingGroup":"str1234","hazardClassifications":["str1234"],"hazardousContent":{"measure":{"unitOfMeasure":"kg","value":123.45},"chemicalIngredients":{"ingredient":["str1234"]}}},"timberProduct":{"supplierCompliance":[{"supplierCode":"str123","certificationClaim":"str1234","certificationCode":"str1234"}]},"buildingProduct":{"installationDocuments":[{"Description":"This description","URL":"https://www.tempUri.Org"}],"conformanceDocuments":[{"Description":"This description","URL":"https://www.tempUri.Org"}],"otherDocuments":[{"Description":"str1234","URL":"https://www.tempUri.Org"}]},"wels":{"watermarkCertificate":"str1234","starRating":123.45,"consumption":{"unitOfMeasure":"str1234","value":123.45},"toilet":{"fullFlush":{"unitOfMeasure":"str1234","value":12},"halfFlush":{"unitOfMeasure":"str1234","value":12},"averageFlush":{"unitOfMeasure":"str1234","value":12}},"dishwasher":{"placeSettings":"str1234","consumptionPerPlaceSetting":{"unitOfMeasure":"str1234","value":12}}},"energyRatings":{"starRating":12,"powerConsumption":{"unitOfMeasure":"str1234","value":12},"externalPowerSupplyMaxOutput":{"unitOfMeasure":"str1234","value":12},"heatingAndCooling":{"rating":[{"ratingName":"Air Conditioning Efficiency Ratio","value":{"unitOfMeasure":"str1234","value":12}}]},"lighting":{"rating":[{"ratingName":"Ballast Lamp Rating","value":{"unitOfMeasure":"str1234","value":12}}]}}},"usageAttributes":{"productCoverage":{"unitOfMeasure":"kg","value":2}},"saleUomSplittingRules":{"minimum":1,"maximum":100},"relationships":[{"type":"test","linkedTimberParentRelationship":{"parentItemNumber":"0000836","MultipleOfParent":5.1},"linkedTimberChildRelationship":{"childItem":[{"itemNumber":"0028745","multiple":1},{"itemNumber":"0000828","multiple":1}]}}],"_meta":{"serverState":"AUlUTTowMDMvZGV0YWlsL0NvdW50cnlDb2RlL0l0ZW1OdW1iZXIvR0VUAzI1ODI4NDcDAwAArI_CidgI"},"_links":[{"rel":"ITM:002/details/CountryCode/GET","href":"/details/{countryCode}","methods":["GET"]},{"rel":"ITM:003/detail/CountryCode/ItemNumber/GET","href":"/details/{countryCode}/{itemNumber}","methods":["GET"]}]}
+          links:
+            ITM:002/details/CountryCode/GET:
+              operationId: ITM:002/details/CountryCode/GET
+              description: "Get Item Details by country code.\n\n_Url Template:_ `/details/{countryCode}`"
+            ITM:003/detail/CountryCode/ItemNumber/GET:
+              operationId: ITM:003/detail/CountryCode/ItemNumber/GET
+              description: "Get Item Details by country code and ItemNumber.\n\n_Url Template:_ `/details/{countryCode}/{itemNumber}`"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorsProblemDetails'
+              example: {"errors":{"ItemNumber":[{"message":"'Item Number' must be 7 characters in length. You entered 1 characters."},{"message":"'Item Number' is not in the correct format."}],"locationCode":[{"message":"'locationCode'must be a 4 digit string."}],"ItemNumbers[0]":[{"message":"'Item Numbers' must be between 7 and 7 characters. You entered 8 characters."}],"LocationCodes[0]":[{"message":"'Location Codes' must be between 4 and 4 characters. You entered 5 characters."}],"ItemNumbers":[{"message":"Too many records requested in Location Codes, the total number can't be more than 100"}],"LocationCodes":[{"message":"Too many records requested in Item Numbers, the total number can't be more than 100"}]}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+  '/details/{countryCode}':
+    get:
+      tags:
+        - Items
+      summary: Retrieves details for Items by country code. (Auth itm:details)
+      description: 'Retrieves the ItemNumber, Description, FamilyTree, UnspscCode, StartDate, EndDate, LastUpdate, TaxInformation,ItemType, MinimumGrades, SaleUnitOfMeasure, ProductOffer, Barcodes, Sourcing, ZoningInformation, RatingsRiskAndCompliance, UsageAttributes.'
+      operationId: ITM:002/details/CountryCode/GET
+      parameters:
+        - name: countryCode
+          in: path
+          description: the ISO 3166-1 Alpha-2 code for the country the item requested belongs to. currently only Australia AU or New Zealand NU
+          required: true
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - name: itemNumbers
+          in: query
+          description: Comma separated list of one or more of the Bunnings unique identifier for Items. This is a 7 digit numerical.
+          schema:
+            type: string
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+        - name: $select
+          in: query
+          description: "Select can optionally be used to project only the required properties of the entity/entities from the server.\n- list required properties separated with a ','.\n- property names are case insensitive.\n- '\\\\*' can be used as a wild card for any property.\n- use '/' to address complex type properties.\n\nexample: $select=name,address/state,contact/*/phoneNumber"
+          schema:
+            type: string
+        - name: $orderby
+          in: query
+          description: "Order By can be optionally used to control the sequence the entities of the collection are returned in.\nThis collection can have a maximum of 1 order properties separated by a ',' character.\nSorting can be done in asc or desc order by following the property name by a space and then the key words asc or desc.\nIf no direction is specified then asc is assumed.\nThis collection can be sorted by the following properties:\n - itemnumber\n - itemtype\nexample: $orderby=name desc,address/state asc.\ndefault: itemnumber"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          headers:
+            ETag:
+              description: An ETag of the resource
+              schema:
+                type: string
+                description: An ETag of the resource
+                format: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemDetails'
+              examples:
+                Default:
+                  value: {"items":[{"itemNumber":"2582847","brand":"Branch","comparisonUom":{"comparisonUnit":0,"comparisonUnitOfMeasure":"m"},"description":{"sectionDescription":"CUBE INSERT FLEXI STORAGE","productDescription":"33X33X27MM WINE RACK BLACK"},"familyTree":{"iD":"13266","nodes":[{"name":"CATEGORY","level":1,"value":"PAINTING AND STORAGE"},{"name":"DEPARTMENT","level":2,"value":"STORAGE AND ORGANISATION D"},{"name":"SUB_DEPARTMENT","level":3,"value":"WARDROBE ORGANISATION SD"},{"name":"CLASS","level":4,"value":"UTILITY STORAGE CL"},{"name":"SUB_CLASS","level":5,"value":"CUBE STORAGE SC"}]},"unspscCode":"24112401","startDate":"2013-03-05T13:32:49Z","endDate":"2013-04-05T13:32:49Z","lastUpdate":"2019-03-14T06:08:33Z","taxInformation":{"taxCode":"P1AU","taxRate":10},"itemType":"RETAIL","minimumGrades":[{"locationType":"Warehouse","grade":"C*"}],"saleUnitOfMeasure":"Each","productOffer":"Standard","barcodes":[{"number":"9341136008791","level":"Consumer","packaging":[{"part":1,"dimension":{"unitOfMeasure":"MM","length":340,"width":280,"height":55},"volume":{"unitOfMeasure":"M3","value":0.0052},"weight":{"unitOfMeasure":"KG","net":3.37,"gross":3.37}}],"hierarchy":{"childBarcode":"ABC1234456670","childQuantity":34,"baseUnitBarcode":"ABC1234567890","baseUnitQuantity":56},"AdditionalDescription":"This is additional description."}],"sourcing":{"suppliers":[{"jurisdiction":"Domestic","supplierCode":"str1234","startDate":"2012-12-13T12:12:12Z","endDate":"2012-12-13T12:12:12Z","packQty":123.45,"packUOM":"125","supplierBarcodes":[{"primary":false,"number":"str12340","level":"1","packaging":[{"part":0,"dimension":{"unitOfMeasure":"Kg","length":2,"width":3,"height":2},"volume":{"unitOfMeasure":"lt","value":2},"weight":{"unitOfMeasure":"kg","net":2.5,"gross":3}}],"hierarchy":{"childBarcode":"Consumer","childQuantity":1,"baseUnitBarcode":"Case12345","baseUnitQuantity":2},"AdditionalDescription":"The description"}],"countriesOfOrigin":[{"country":"st","factory":"str1234"}]}],"overridingSuppliers":[{"reason":"reason","supplierCode":"str1234","startDate":"2012-12-13T12:12:12Z","endDate":"2012-12-13T12:12:12Z","packQty":123.45,"supplierBarcodes":[{"primary":false,"number":"str12340","level":"1","packaging":[{"part":0,"dimension":{"unitOfMeasure":"Kg","length":2,"width":3,"height":2},"volume":{"unitOfMeasure":"lt","value":2},"weight":{"unitOfMeasure":"kg","net":2.5,"gross":3}}],"hierarchy":{"childBarcode":"Consumer","childQuantity":1,"baseUnitBarcode":"Case12345","baseUnitQuantity":2},"AdditionalDescription":"The description"}],"countriesOfOrigin":[{"country":"st","factory":"str1234"}]}]},"zoningInformation":[{"retailZone":"AU RZ 4","region":"SA","status":"Live","pendingStatus":{"status":"str1234","date":"2012-12-13T12:12:12Z"},"restrictions":[{"type":"RESTRICTED","locations":{"location":["AU"]},"locationRestrictions":"NONE","saleQuantity":{"iD":"324324","alertBaseMessage":"This is alert based message","alertCustomerMessage":"This is alert based message","restrictionSizing":{"maxQuantity":300,"maxLength":20},"validTransactions":{"transaction":"SALE"}},"minimumAge":30}],"fulfilmentDetails":{"deliveryType":{"code":"MET_PARCEL","description":"Metro Parcel"},"freightType":{"code":"MET_PARCEL","description":"Metro Parcel"},"isDirectDelivery":false,"leadTimes":{"supplierDispatch":"3","supplierToBunnings":"3","supplierToCustomer":"2","bunningsDispatch":"1"}},"webCommerceAttributes":{"visible":true,"transactable":true,"inStorePickup":true,"AvailableForDelivery":true,"comment":"Click and Collect/Deliver"}}],"ratingsRiskAndCompliance":{"highRisk":"true","supplierDeclarationsOfConformity":[{"Description":"str1234","URL":"https://www.tempUri.Org"}],"weightRating":{"unitOfMeasure":"str1234","value":123.45},"safetyStandards":{"aCCCMandatoryStandard":"true","standards":[{"standardName":"str1234","referenceNumber":"str1234"}],"safetyDataSheet":{"Description":"This description","URL":"https://www.tempUri.Org"}},"dangerousGood":{"class":"str1234","classPackagingGroup":"str1234","hazardClassifications":["str1234"],"hazardousContent":{"measure":{"unitOfMeasure":"kg","value":123.45},"chemicalIngredients":{"ingredient":["str1234"]}}},"timberProduct":{"supplierCompliance":[{"supplierCode":"str123","certificationClaim":"str1234","certificationCode":"str1234"}]},"buildingProduct":{"installationDocuments":[{"Description":"This description","URL":"https://www.tempUri.Org"}],"conformanceDocuments":[{"Description":"This description","URL":"https://www.tempUri.Org"}],"otherDocuments":[{"Description":"str1234","URL":"https://www.tempUri.Org"}]},"wels":{"watermarkCertificate":"str1234","starRating":123.45,"consumption":{"unitOfMeasure":"str1234","value":123.45},"toilet":{"fullFlush":{"unitOfMeasure":"str1234","value":12},"halfFlush":{"unitOfMeasure":"str1234","value":12},"averageFlush":{"unitOfMeasure":"str1234","value":12}},"dishwasher":{"placeSettings":"str1234","consumptionPerPlaceSetting":{"unitOfMeasure":"str1234","value":12}}},"energyRatings":{"starRating":12,"powerConsumption":{"unitOfMeasure":"str1234","value":12},"externalPowerSupplyMaxOutput":{"unitOfMeasure":"str1234","value":12},"heatingAndCooling":{"rating":[{"ratingName":"Air Conditioning Efficiency Ratio","value":{"unitOfMeasure":"str1234","value":12}}]},"lighting":{"rating":[{"ratingName":"Ballast Lamp Rating","value":{"unitOfMeasure":"str1234","value":12}}]}}},"usageAttributes":{"productCoverage":{"unitOfMeasure":"kg","value":2}},"saleUomSplittingRules":{"minimum":1,"maximum":100},"relationships":[{"type":"test","linkedTimberParentRelationship":{"parentItemNumber":"0000836","MultipleOfParent":5.1},"linkedTimberChildRelationship":{"childItem":[{"itemNumber":"0028745","multiple":1},{"itemNumber":"0000828","multiple":1}]}}],"_meta":{"serverState":"AUlUTTowMDMvZGV0YWlsL0NvdW50cnlDb2RlL0l0ZW1OdW1iZXIvR0VUAzI1ODI4NDcDAwAArI_CidgI"},"_links":[{"rel":"ITM:002/details/CountryCode/GET","href":"/details/{countryCode}","methods":["GET"]},{"rel":"ITM:003/detail/CountryCode/ItemNumber/GET","href":"/details/{countryCode}/{itemNumber}","methods":["GET"]}]}],"_meta":{"serverState":"AUlUTTowMDIvZGV0YWlscy9Db3VudHJ5Q29kZS9HRVQDMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwAwMAAKyPwonYCA"},"_links":[{"rel":"ITM:002/details/CountryCode/GET","href":"/details/{countryCode}","methods":["GET"]},{"rel":"ITM:003/detail/CountryCode/ItemNumber/GET","href":"/details/{countryCode}/{itemNumber}","methods":["GET"]}]}
+          links:
+            ITM:002/details/CountryCode/GET:
+              operationId: ITM:002/details/CountryCode/GET
+              description: "Get Item Details by country code.\n\n_Url Template:_ `/details/{countryCode}`"
+            ITM:003/detail/CountryCode/ItemNumber/GET:
+              operationId: ITM:003/detail/CountryCode/ItemNumber/GET
+              description: "Get Item Details by country code and ItemNumber.\n\n_Url Template:_ `/details/{countryCode}/{itemNumber}`"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorsProblemDetails'
+              example: {"errors":{"ItemNumber":[{"message":"'Item Number' must be 7 characters in length. You entered 1 characters."},{"message":"'Item Number' is not in the correct format."}],"locationCode":[{"message":"'locationCode'must be a 4 digit string."}],"ItemNumbers[0]":[{"message":"'Item Numbers' must be between 7 and 7 characters. You entered 8 characters."}],"LocationCodes[0]":[{"message":"'Location Codes' must be between 4 and 4 characters. You entered 5 characters."}],"ItemNumbers":[{"message":"Too many records requested in Location Codes, the total number can't be more than 100"}],"LocationCodes":[{"message":"Too many records requested in Item Numbers, the total number can't be more than 100"}]}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+  /discovery:
+    get:
+      tags:
+        - Discovery
+      summary: Provides an overview to current functionality offered by the API for that version (Auth itm:details)
+      description: Discovery API start point
+      operationId: ITM:001/Discovery/GET
+      parameters:
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+      responses:
+        '200':
+          description: Success
+          headers:
+            ETag:
+              description: An ETag of the resource
+              schema:
+                type: string
+                description: An ETag of the resource
+                format: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryPoint'
+              examples:
+                Default:
+                  value: {"_meta":{"serverState":"AUlUTTowMDIvZGV0YWlscy9Db3VudHJ5Q29kZS9HRVQDQTk3QTE2OEItNERBNC00NDRELUFBOUQtM0Q0Q0EwNUM1QUEyAwMAAKyPwonYCA"},"_links":[{"rel":"ITM:001/Discovery/GET","href":"/discovery","methods":["GET"]},{"rel":"ITM:002/details/CountryCode/GET","href":"/details/{countryCode}","methods":["GET"]},{"rel":"ITM:003/detail/CountryCode/ItemNumber/GET","href":"/details/{countryCode}/{itemNumber}","methods":["GET"]},{"rel":"ITM:008/locations/ItemNumber/locationCodes/GET","href":"/locations/{countryCode}?itemNumbers={itemNumbers}&locationCodes={locationCodes}","methods":["GET"]},{"rel":"ITM:007/locations/ItemNumber/locationCodes/GET","href":"/locations/{countryCode}?itemNumbers={itemNumbers}&locationCodes={locationCodes}","methods":["GET"]},{"rel":"ITM:009/locations/ItemNumber/locationCode/GET","href":"/locations/{countryCode}/messages?itemNumber={itemNumber}&locationCode={locationCode}","methods":["GET"]},{"rel":"ITM:006/locations/ItemNumber/locationCodes/GET","href":"/locations/{countryCode}/search?itemNumbers={itemNumbers}&locationCodes={locationCodes}","methods":["GET"]}]}
+          links:
+            ITM:001/Discovery/GET:
+              operationId: ITM:001/Discovery/GET
+              description: "Initial discovery endpoint ascertain new entry link availabilities.\n\n_Url Template:_ `/discovery`"
+            ITM:002/details/CountryCode/GET:
+              operationId: ITM:002/details/CountryCode/GET
+              description: "Get Item Details by country code.\n\n_Url Template:_ `/details/{countryCode}`"
+            ITM:003/detail/CountryCode/ItemNumber/GET:
+              operationId: ITM:003/detail/CountryCode/ItemNumber/GET
+              description: "Get Item Details by country code and ItemNumber.\n\n_Url Template:_ `/details/{countryCode}/{itemNumber}`"
+            ITM:006/locations/ItemNumber/locationCodes/GET:
+              operationId: ITM:006/locations/ItemNumber/locationCodes/GET
+              description: "Retrieves details for Items for the given Item Number(s) and the For the Given Location(s). The search result can be filtered using ODATA.\n\n_Url Template:_ `/locations/{countryCode}/search?itemNumbers={itemNumbers}&locationCodes={locationCodes}`"
+            ITM:007/locations/ItemNumber/locationCodes/GET:
+              operationId: ITM:007/locations/ItemNumber/locationCodes/GET
+              description: "Get Item Details by country code and ItemNumber.\n\n_Url Template:_ `/locations/{countryCode}?itemNumbers={itemNumbers}&locationCodes={locationCodes}`"
+            ITM:008/locations/ItemNumber/locationCodes/GET:
+              operationId: ITM:008/locations/ItemNumber/locationCodes/GET
+              description: "Get Item Details by country code and ItemNumber.\n\n_Url Template:_ `/locations/{countryCode}?itemNumbers={itemNumbers}&locationCodes={locationCodes}`"
+            ITM:009/locations/ItemNumber/locationCode/GET:
+              operationId: ITM:009/locations/ItemNumber/locationCode/GET
+              description: "Get Item location details with messages by country code, item number and location code.\n\n_Url Template:_ `/locations/{countryCode}/messages?itemNumber={itemNumber}&locationCode={locationCode}`"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericValidationErrorsProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=validationError","title":"Bad Request","status":400,"detail":"The request is invalid.","errors":{}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+  '/locations/{countryCode}':
+    get:
+      tags:
+        - Item Location
+      summary: Retrieves item details for the given Item Number(s) and Location(s). (Auth itm:details)
+      description: "'Retrieves the ItemNumber, LocationCode, ItemStatus, IsOnRecall, IsRanged, PrimaryBarcode, InStoreLocations, Suppliers, IsSellableInStore.'\r\n\r\nNOTE-- Not more than 100 records are allowed as input and would result in an error.Calculation of total records is a product of itemNumbers and locationCodes.i.e total requests = LocationCodes * ItemNumbers For example if 10 item numbers are requested for 10 locationCodes, that makes the request = LocationCode * ItemNumbers = 100 total records.\r\n\r\nSo a query with total requests > 100 needs to be treated as a failure scenario and would result in a response with BAD REQUEST(Http Status code 400) With the reason as 'Too many records requested, the total number can't be more than 100 '.\r\n\r\nNOTE-- Only the ItemNumbers found in the data source would be returned.So if 90 ItemNumbers are provided in the requests and only 89 are found in the data source, Only Details of 89 Items would be returned."
+      operationId: ITM:008/locations/ItemNumber/locationCodes/GET
+      parameters:
+        - name: countryCode
+          in: path
+          description: Country Code
+          required: true
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - name: itemNumbers
+          in: query
+          description: Comma separated list of one or more of the Bunnings unique identifier for Items. This is a 7 digit numerical.
+          required: true
+          schema:
+            type: string
+        - name: locationCodes
+          in: query
+          description: Comma separated list of one or more store Identifiers
+          required: true
+          schema:
+            type: string
+        - name: includeItemDetail
+          in: query
+          description: include item detail in the response
+          schema:
+            type: boolean
+            default: false
+        - name: includeMessages
+          in: query
+          description: flag to include item location messages in the response
+          schema:
+            type: boolean
+            default: false
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+        - name: $select
+          in: query
+          description: "Select can optionally be used to project only the required properties of the entity/entities from the server.\n- list required properties separated with a ','.\n- property names are case insensitive.\n- '\\\\*' can be used as a wild card for any property.\n- use '/' to address complex type properties.\n\nexample: $select=name,address/state,contact/*/phoneNumber"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          headers:
+            ETag:
+              description: An ETag of the resource
+              schema:
+                type: string
+                description: An ETag of the resource
+                format: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemLocationV1_2'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorsProblemDetails'
+              example: {"errors":{"ItemNumber":[{"message":"'Item Number' must be 7 characters in length. You entered 1 characters."},{"message":"'Item Number' is not in the correct format."}],"locationCode":[{"message":"'locationCode'must be a 4 digit string."}],"ItemNumbers[0]":[{"message":"'Item Numbers' must be between 7 and 7 characters. You entered 8 characters."}],"LocationCodes[0]":[{"message":"'Location Codes' must be between 4 and 4 characters. You entered 5 characters."}],"ItemNumbers":[{"message":"Too many records requested in Location Codes, the total number can't be more than 100"}],"LocationCodes":[{"message":"Too many records requested in Item Numbers, the total number can't be more than 100"}]}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+  '/locations/{countryCode}/messages':
+    get:
+      tags:
+        - Item Location
+      summary: Retrieves Item details with messages for the given Item Number and Location. (Auth itm:details)
+      description: "'Retrieves the ItemNumber, LocationCode, ItemStatus, IsOnRecall, IsRanged, PrimaryBarcode, InStoreLocations, Suppliers.'\r\n            NOTE-- includeMessages parameter is true by default, if messages are not required pass false."
+      operationId: ITM:009/locations/ItemNumber/locationCode/GET
+      parameters:
+        - name: countryCode
+          in: path
+          description: Country Code
+          required: true
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - name: itemNumber
+          in: query
+          description: Bunnings unique identifier for Items. This is a 7 digit number.
+          required: true
+          schema:
+            type: string
+        - name: locationCode
+          in: query
+          description: Bunnings store Identifier. This is a 4 digit number
+          required: true
+          schema:
+            type: string
+        - name: includeMessages
+          in: query
+          description: flag to include item location messages in the response
+          schema:
+            type: boolean
+            default: true
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+        - name: $select
+          in: query
+          description: "Select can optionally be used to project only the required properties of the entity/entities from the server.\n- list required properties separated with a ','.\n- property names are case insensitive.\n- '\\\\*' can be used as a wild card for any property.\n- use '/' to address complex type properties.\n\nexample: $select=name,address/state,contact/*/phoneNumber"
+          schema:
+            type: string
+        - name: $filter
+          in: query
+          description: "Filter can be optionally used to filter out entities of the collection.\nA filter is comprised of one or more expressions joined with the following logical operators listed bellow in precedence order.\n\n*Allowed Logical Operators*\r\n * `(<expression>)`\r\n * `not <expression>`\r\n * `<expression> and <expression>`\r\n * `<expression> or <expression>`\r\n\n\nThe filter can not exceed a maximum of 4 complexity which is a sum of the complexity of each expression in the filter.\nExpressions match one of the bellow patterns\n\n**Basic Filters**\r\n|Complexity|Property|Operators|ValueRegex|Description|\r\n|----------|---------|---------|----------|-----------|\r\n|1|isOnRecall|Equal|(true&#124;false)||\r\n|1|isRanged|Equal|(true&#124;false)||\r\n|1|availability|Equal|('Located'&#124;'Special_Order'&#124;'Other')||\r\n|1|itemStatus|Equal|('Trial'&#124;'De-Ranged'&#124;'Archived'&#124;'Suspended'&#124;'Transact'&#124;'Quit (S1)'&#124;'Live'&#124;'Restricted'&#124;'Isolation'&#124;'Deleted'&#124;'Closed'&#124;'Quit (S2)'&#124;'Withdrawal'&#124;'Recall'&#124;'Draft'&#124;'Quit (S3)'&#124;'CSO'&#124;'Promotion')||\r\n\r\n*Matching Regex Patterns*:\r\n * (?'property'[iI][sS][oO][nN][rR][eE][cC][aA][lL][lL]) (?'operation'eq) (?'value'true|false)\r\n * (?'property'[iI][sS][rR][aA][nN][gG][eE][dD]) (?'operation'eq) (?'value'true|false)\r\n * (?'property'[aA][vV][aA][iI][lL][aA][bB][iI][lL][iI][tT][yY]) (?'operation'eq) (?'value''Located'|'Special_Order'|'Other')\r\n * (?'property'[iI][tT][eE][mM][sS][tT][aA][tT][uU][sS]) (?'operation'eq) (?'value''Trial'|'De-Ranged'|'Archived'|'Suspended'|'Transact'|'Quit (S1)'|'Live'|'Restricted'|'Isolation'|'Deleted'|'Closed'|'Quit (S2)'|'Withdrawal'|'Recall'|'Draft'|'Quit (S3)'|'CSO'|'Promotion')\r\n\r\n*Allowed Operators*\r\n * Equal = `<property> eq <value>`\r\n\r\n\r\nSample filter: $filter=name eq 'Bob' and (address/state in ['WA','VIC'] or age gt 10)\r\n\n\n"
+          schema:
+            type: string
+        - name: $skip
+          in: query
+          description: "skip can be used to skip the first n number of results of the sequences of entities of the collection.\n\nexample: $skip=5"
+          schema:
+            minimum: 0
+            type: integer
+        - name: $top
+          in: query
+          description: "top can be used to take the first n number of results of the sequences of entities of the collection. the maximum value for top is 100\n\nexample: $top=5"
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          description: Success
+          headers:
+            ETag:
+              description: An ETag of the resource
+              schema:
+                type: string
+                description: An ETag of the resource
+                format: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemLocationV1_2'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorsProblemDetails'
+              example: {"errors":{"ItemNumber":[{"message":"'Item Number' must be 7 characters in length. You entered 1 characters."},{"message":"'Item Number' is not in the correct format."}],"locationCode":[{"message":"'locationCode'must be a 4 digit string."}],"ItemNumbers[0]":[{"message":"'Item Numbers' must be between 7 and 7 characters. You entered 8 characters."}],"LocationCodes[0]":[{"message":"'Location Codes' must be between 4 and 4 characters. You entered 5 characters."}],"ItemNumbers":[{"message":"Too many records requested in Location Codes, the total number can't be more than 100"}],"LocationCodes":[{"message":"Too many records requested in Item Numbers, the total number can't be more than 100"}]}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+  '/locations/{countryCode}/search':
+    get:
+      tags:
+        - Item Location
+      summary: Retrieves item details for the given Item Number(s) and Location(s). (Auth itm:details)
+      description: "'Retrieves the ItemNumber, LocationCode, ItemStatus, IsOnRecall, IsRanged, PrimaryBarcode, InStoreLocations, Suppliers.'\r\n\r\nNOTE-- Not more than 100 records are allowed as input and would result in an error.Calculation of total records is a product of itemNumbers and locationCodes.i.e total requests = LocationCodes * ItemNumbers For example if 10 item numbers are requested for 10 locationCodes, that makes the request = LocationCode * ItemNumbers = 100 total records.\r\n\r\nSo a query with total requests > 100 needs to be treated as a failure scenario and would result in a response with BAD REQUEST(Http Status code 400) With the reason as 'Too many records requested, the total number can't be more than 100 '.\r\n\r\nNOTE-- Only the ItemNumbers found in the data source would be returned.So if 90 ItemNumbers are provided in the requests and only 89 are found in the data source, Only Details of 89 Items would be returned."
+      operationId: ITM:006/locations/ItemNumber/locationCodes/GET
+      parameters:
+        - name: countryCode
+          in: path
+          description: Country Code
+          required: true
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - name: itemNumbers
+          in: query
+          description: Comma separated list of one or more of the Bunnings unique identifier for Items. This is a 7 digit numerical.
+          required: true
+          schema:
+            type: string
+        - name: locationCodes
+          in: query
+          description: Comma separated list of one or more store Identifiers
+          required: true
+          schema:
+            type: string
+        - name: includeMessages
+          in: query
+          description: flag to include item location messages in the response
+          schema:
+            type: boolean
+            default: false
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+        - name: $select
+          in: query
+          description: "Select can optionally be used to project only the required properties of the entity/entities from the server.\n- list required properties separated with a ','.\n- property names are case insensitive.\n- '\\\\*' can be used as a wild card for any property.\n- use '/' to address complex type properties.\n\nexample: $select=name,address/state,contact/*/phoneNumber"
+          schema:
+            type: string
+        - name: $filter
+          in: query
+          description: "Filter can be optionally used to filter out entities of the collection.\nA filter is comprised of one or more expressions joined with the following logical operators listed bellow in precedence order.\n\n*Allowed Logical Operators*\r\n * `(<expression>)`\r\n * `not <expression>`\r\n * `<expression> and <expression>`\r\n * `<expression> or <expression>`\r\n\n\nThe filter can not exceed a maximum of 4 complexity which is a sum of the complexity of each expression in the filter.\nExpressions match one of the bellow patterns\n\n**Basic Filters**\r\n|Complexity|Property|Operators|ValueRegex|Description|\r\n|----------|---------|---------|----------|-----------|\r\n|1|isOnRecall|Equal|(true&#124;false)||\r\n|1|isRanged|Equal|(true&#124;false)||\r\n|1|availability|Equal|('Located'&#124;'Special_Order'&#124;'Other')||\r\n|1|itemStatus|Equal|('Trial'&#124;'De-Ranged'&#124;'Archived'&#124;'Suspended'&#124;'Transact'&#124;'Quit (S1)'&#124;'Live'&#124;'Restricted'&#124;'Isolation'&#124;'Deleted'&#124;'Closed'&#124;'Quit (S2)'&#124;'Withdrawal'&#124;'Recall'&#124;'Draft'&#124;'Quit (S3)'&#124;'CSO'&#124;'Promotion')||\r\n\r\n*Matching Regex Patterns*:\r\n * (?'property'[iI][sS][oO][nN][rR][eE][cC][aA][lL][lL]) (?'operation'eq) (?'value'true|false)\r\n * (?'property'[iI][sS][rR][aA][nN][gG][eE][dD]) (?'operation'eq) (?'value'true|false)\r\n * (?'property'[aA][vV][aA][iI][lL][aA][bB][iI][lL][iI][tT][yY]) (?'operation'eq) (?'value''Located'|'Special_Order'|'Other')\r\n * (?'property'[iI][tT][eE][mM][sS][tT][aA][tT][uU][sS]) (?'operation'eq) (?'value''Trial'|'De-Ranged'|'Archived'|'Suspended'|'Transact'|'Quit (S1)'|'Live'|'Restricted'|'Isolation'|'Deleted'|'Closed'|'Quit (S2)'|'Withdrawal'|'Recall'|'Draft'|'Quit (S3)'|'CSO'|'Promotion')\r\n\r\n*Allowed Operators*\r\n * Equal = `<property> eq <value>`\r\n\r\n\r\nSample filter: $filter=name eq 'Bob' and (address/state in ['WA','VIC'] or age gt 10)\r\n\n\n"
+          schema:
+            type: string
+        - name: $skip
+          in: query
+          description: "skip can be used to skip the first n number of results of the sequences of entities of the collection.\n\nexample: $skip=5"
+          schema:
+            minimum: 0
+            type: integer
+        - name: $top
+          in: query
+          description: "top can be used to take the first n number of results of the sequences of entities of the collection. the maximum value for top is 100\n\nexample: $top=5"
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          description: Success
+          headers:
+            ETag:
+              description: An ETag of the resource
+              schema:
+                type: string
+                description: An ETag of the resource
+                format: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemLocationSearchV1_2'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorsProblemDetails'
+              example: {"errors":{"ItemNumber":[{"message":"'Item Number' must be 7 characters in length. You entered 1 characters."},{"message":"'Item Number' is not in the correct format."}],"locationCode":[{"message":"'locationCode'must be a 4 digit string."}],"ItemNumbers[0]":[{"message":"'Item Numbers' must be between 7 and 7 characters. You entered 8 characters."}],"LocationCodes[0]":[{"message":"'Location Codes' must be between 4 and 4 characters. You entered 5 characters."}],"ItemNumbers":[{"message":"Too many records requested in Location Codes, the total number can't be more than 100"}],"LocationCodes":[{"message":"Too many records requested in Item Numbers, the total number can't be more than 100"}]}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+  '/search/{countryCode}':
+    post:
+      tags:
+        - Items Search
+      summary: Search List of Items (Auth itm:details)
+      description: 'This endpoint enables users to search for items based on the country code and any additional filters specified in the request body. It returns a list of items matching the provided criteria, offering a continuation token for larger result sets.'
+      operationId: ITM:011/search/CountryCode/POST
+      parameters:
+        - name: continuationToken
+          in: header
+          description: The continuationToken is a parameter used for pagination in large data sets.
+          schema:
+            type: string
+        - name: countryCode
+          in: path
+          description: country Code
+          required: true
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - name: x-version-api
+          in: header
+          description: The API version the client is calling this endpoint at. When calling this api the client must provided the version of the api they have been written against this allows the api to correctly support the calling clients. Clients are still required to support non breaking changes within the same version
+          required: true
+          schema:
+            type: string
+          example: '1.4'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchModelRequest'
+            example: {"query":"lawn","filters":{"facets":[{"id":"@Automotive","value":"Automotive"},{"id":"@price_6401","startRange":0,"endRange":500,"endInclusive":true}],"locationCode":"6401","availableInStoreAllProducts":{"allProducts":false,"inStoreToday":false}},"sortBy":"relevancy"}
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+              example: {"results":[{"title":"Exide Powerider N06 Lawn Mower Battery","itemNumber":"0126470","_meta":{"countryCode":"AU","itemNumber":"0126470"},"_links":[{"rel":"ITM:003/detail/CountryCode/ItemNumber/GET","href":"/details/{countryCode}/{itemNumber}","methods":["GET"]}]}],"facets":[{"id":"supercategories","displayName":"SuperCategories","type":"specific","values":[{"displayName":"Automotive","isSelected":false,"resultCount":1,"value":"Automotive"},{"displayName":"Building & Hardware","isSelected":false,"resultCount":1,"value":"Building & Hardware"},{"displayName":"Garden","isSelected":false,"resultCount":1,"value":"Garden"},{"displayName":"Outdoor Living","isSelected":false,"resultCount":1,"value":"Outdoor Living"},{"displayName":"Tools","isSelected":false,"resultCount":1,"value":"Tools"}]},{"id":"@price_6401","displayName":"price_6401","type":"Range","values":[{"displayName":"0 - 50","isSelected":false,"resultCount":1,"endInclusive":false,"startRange":0,"endRange":50},{"displayName":"50 - 100","isSelected":false,"resultCount":5,"endInclusive":false,"startRange":50,"endRange":100},{"displayName":"100 - 150","isSelected":false,"resultCount":6,"endInclusive":false,"startRange":100,"endRange":150}]}],"_meta":{},"_links":[]}
+          links:
+            ITM:003/detail/CountryCode/ItemNumber/GET:
+              operationId: ITM:003/detail/CountryCode/ItemNumber/GET
+              description: "Get Item Details by country code and ItemNumber.\n\n_Path To Link:_ `$.results[*]`\n\n_Url Template:_ `/details/{countryCode}/{itemNumber}`"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericValidationErrorsProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=validationError","title":"Bad Request","status":400,"detail":"The request is invalid.","errors":{}}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingResourceProblemDetails'
+              example: {"type":"https://problem.api.bunnings.com.au?type=missingResource","title":"ItemLocation not found","status":404,"detail":"Item id: 12345"}
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TooManyRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/429","title":"Too Many Requests","status":429,"detail":"The user has sent too many requests in a given amount of time. Please retry after 60 seconds.","instance":""}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenRequestsProblemDetails'
+              example: {"type":"https://httpstatuses.com/403","title":"Forbidden","status":403,"detail":"The server understood the request, but is refusing to authorize it. The user isn't authorized to request for the resource.","instance":""}
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerErrorProblemDetails'
+              example: {"type":"https://httpstatuses.com/500","title":"Server Error","status":500,"detail":"An error occurred processing your request. We are sorry for the trouble and please try again in a moment.","instance":""}
+        '401':
+          description: Unauthorized
+        5XX:
+          description: An unexpected error has occurred
+      security:
+        - oauth2:
+            - itm:details
+components:
+  schemas:
+    AvailableInStore:
+      type: object
+      properties:
+        allProducts:
+          type: boolean
+          description: All Products
+        inStoreToday:
+          type: boolean
+          description: In Store Today
+      description: only shows the products that are available in the store.
+    Barcode:
+      type: object
+      properties:
+        number:
+          type: string
+          description: A bar code that belongs to this item.
+          nullable: true
+        level:
+          type: string
+          description: "Is this a barcode for one unit of this item or a case of them.\r\nBarcodeLevelValues:\r\n   A Consumer barcode is a barcode on the item that will be sold to the consumer.\r\n   A Case barcode is a barcode on a shipping carton containing x number of the consumer item.\r\n enum:\r\n   - Consumer\r\n   - Case"
+          nullable: true
+        packaging:
+          type: array
+          items:
+            $ref: '#/components/schemas/Box'
+          description: "Packaging information regarding the number, size, volume, weight of the components that make up the item.\r\nPackaging information is at manufacturer level, manufacturers are allocated barcodes not suppliers."
+          nullable: true
+        hierarchy:
+          $ref: '#/components/schemas/Hierarchy'
+        AdditionalDescription:
+          type: string
+          description: "Additional description for the barcoded product e.g. for greenlife this is most likely to be the\r\nbotanical name of the product"
+          nullable: true
+        supplierItemNumber:
+          type: string
+          description: Item number for this product designate within the suppliers systems.
+          nullable: true
+      description: "The bar code number for this product. A bar code can be 8 to g``943 digits\r\nfor the item bar code itself.And package bar codes can be 14 digits."
+    BaseItemType:
+      type: object
+      properties:
+        code:
+          type: string
+          description: For grouped base products this will be a unique identifier.
+          nullable: true
+        name:
+          type: string
+          description: The enriched name for the base product.
+          nullable: true
+        isDummy:
+          type: boolean
+          description: The base product is a dummy base product or not.
+        variantCategories:
+          type: array
+          items:
+            type: string
+          description: The enriched variant category for the base product.
+          nullable: true
+      description: Base item type
+    Box:
+      type: object
+      properties:
+        part:
+          type: integer
+          description: Part
+          format: int32
+        dimension:
+          $ref: '#/components/schemas/Dimension'
+        volume:
+          $ref: '#/components/schemas/Measurement'
+        weight:
+          $ref: '#/components/schemas/Weight'
+      description: 'Box information - part, dimension, volume and weight'
+    Brand:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Unique and mandatory code for brand.
+          nullable: true
+        name:
+          type: string
+          description: Name of the brand
+          nullable: true
+        description:
+          type: string
+          description: Description of the brand
+          nullable: true
+        leadingBrand:
+          type: boolean
+          description: Is leading brand flag of the brand
+        tradeBrand:
+          type: boolean
+          description: Is trade brand flag of the brand
+        marketplaceBrand:
+          type: boolean
+          description: Is marketplace brand flag of the brand
+        logo:
+          $ref: '#/components/schemas/MediaType'
+      description: Item brand info
+    BuildingProduct:
+      type: object
+      properties:
+        installationDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentUrl'
+          description: URL where the installation instructions can be found.
+          nullable: true
+        conformanceDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentUrl'
+          description: Conformance document information
+          nullable: true
+        otherDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentUrl'
+          description: Other documents information
+          nullable: true
+      description: "A building product is any material or other thing associated with, or could be associated with\r\na building.Associated with means incorporated into, or connected to a building by carrying\r\nout building work. Mostly related to fire, structural components, damp or weatherproofing,\r\nventilation and sanitaion, safe movement/access and egress and energy efficiency."
+    Category:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Unique and mandatory code for category
+          nullable: true
+        name:
+          type: string
+          description: Name of the category
+          nullable: true
+        level:
+          type: string
+          description: Level of the category
+          nullable: true
+      description: Category
+    ChemicalIngredients:
+      type: object
+      properties:
+        ingredient:
+          type: array
+          items:
+            type: string
+          description: ingredient
+          nullable: true
+      description: List of ingredients that make up the content of the hazardous material
+    ChildItem:
+      type: object
+      properties:
+        itemNumber:
+          type: string
+          description: Item number
+          nullable: true
+        multiple:
+          type: number
+          description: Multiple
+          format: double
+      description: Child item
+    Classification:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Unique id for product classification code
+          nullable: true
+        name:
+          type: string
+          description: The name of the product classification name
+          nullable: true
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature'
+          description: Features
+          nullable: true
+      description: Classification
+    ComparisonUom:
+      type: object
+      properties:
+        comparisonUnit:
+          type: number
+          description: "The price divisor\r\nFor example - if the items are 250mmx250mm tiles, we will want the price per Square Metre.\r\nComparison Unit of Measure = Square Metre\r\nComparison Unit = 0.0625 (it will take 4x4 tiles to make a SQM, and therefore 1 tile is 1/16th of a Square Metre).  $0.80 per tile would be $12.80 per SQM.\r\nNote 1: If the item was a Carton of 16 Tiles, the Comparison Unit will be 1, as the Box is 1 Square Metre.  $10 for the carton would be $10 per SQM.\r\n            \r\nNote 2: If the item was a Carton of 50 Tiles, the Comparison Unit will be 3.125, as the Box would cover 3.125 Square Metres.  $30 for the carton would be $9.60 per SQM."
+          format: decimal
+        comparisonUnitOfMeasure:
+          type: string
+          description: The comparison (price per) unit of measure for this product.
+          nullable: true
+      description: Comparison Unit of Measure and the Comparison Unit
+    Correlation:
+      type: object
+      properties:
+        correlationId:
+          type: string
+          description: Item Correlation Id
+          nullable: true
+        commonItemNumberFlag:
+          type: boolean
+          description: "Flag to indicate if it is a common item number.\r\n- True: when this product represented by this Item has or would have the same item-number across all listings.\r\n- False: when this product represented by this Item has or would have different item-numbers in at least one listing.\r\nWhere a single product is determined by having the same CorrelationId in all item listings.\r\nNote: A product can start out with a common item number, then if archived in one country and\r\n brought back again under a new item number, would change to no longer have a common item number."
+      description: "For information that informs correlation of an item across countries,\r\nsuch as if the item is common across countries\r\nand if it has a shared item number."
+    CostDetail:
+      type: object
+      properties:
+        costZone:
+          type: string
+          description: This is the descriptive cost zone that the cost is for
+          nullable: true
+        cost:
+          type: number
+          description: This is the cost for an item in its appropriate cost zone for Bunnings from the supplier
+          format: decimal
+        costUnitPrice:
+          type: number
+          description: This is the cost unit price for an item
+          format: decimal
+      description: Cost Detail Information
+    CountryCode:
+      enum:
+        - AU
+        - NZ
+      type: string
+      description: Defines the enumerated countries that Bunnings operates in
+    DangerousGood:
+      type: object
+      properties:
+        class:
+          type: string
+          description: Dangerous goods that can harm people. These items are given a hazard class number with each number associated to a chemical characteristic.
+          nullable: true
+        classPackagingGroup:
+          type: string
+          description: 'Known values (I,II,III,Aerosol,Manufactured Product)'
+          nullable: true
+        hazardClassifications:
+          type: array
+          items:
+            type: string
+          description: 'List of Hazard Classifications, which the item belongs. Can select multiple hazard classifications.'
+          nullable: true
+        hazardousContent:
+          $ref: '#/components/schemas/HazardousContent'
+      description: Dangerous Goods Classification
+    DeliveryTypeClass:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code for the type of delivery/freight used by this for this item.
+          nullable: true
+        description:
+          type: string
+          description: "Description of the above.  This is required as this is most likely to have\r\nthe comment if it is a direct delivery item number."
+          nullable: true
+      description: Delivery Freight Item Type code and description
+    Description:
+      type: object
+      properties:
+        sectionDescription:
+          type: string
+          description: Part 1 of the items inventory description. The description is a string up to 30 characters in length.
+          nullable: true
+        productDescription:
+          type: string
+          description: Part 2 of the items inventory description. The description is a string up to 30 characters in length.
+          nullable: true
+      description: An items description consist of two 30 character strings. This is the core description of the product in inventory
+    Dimension:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+          description: unit of measurement
+          nullable: true
+        length:
+          type: number
+          description: length
+          format: double
+        width:
+          type: number
+          description: width
+          format: double
+        height:
+          type: number
+          description: height
+          format: double
+      description: Dimension of box
+    Dishwasher:
+      type: object
+      properties:
+        placeSettings:
+          type: string
+          description: Place Settings
+          nullable: true
+        consumptionPerPlaceSetting:
+          $ref: '#/components/schemas/WeightRating'
+      description: Dishwasher details
+    DocumentSection:
+      enum:
+        - OTHER
+        - WARRANTY
+        - SPECIFICATION
+        - BROCHURE
+        - INSTRUCTIONS
+        - USERGUIDE
+        - MATERIALSAFETY
+        - SDOCFORM
+        - INSTALLATION
+        - MANUAL
+        - ASEEMBLY_GUIDES
+      type: string
+      description: Document section enum
+    DocumentUrl:
+      type: object
+      properties:
+        Description:
+          type: string
+          description: Brief description of the document
+          nullable: true
+        URL:
+          type: string
+          description: URL of the document
+          format: uri
+          nullable: true
+      description: Description of the document and the URL
+    EnergyRating:
+      type: object
+      properties:
+        ratingName:
+          type: string
+          description: Energy rating of lighting type
+          nullable: true
+        value:
+          $ref: '#/components/schemas/Measurement'
+      description: Energy rating of lighting type
+    EnergyRatings:
+      type: object
+      properties:
+        starRating:
+          type: number
+          description: Star rating
+          format: double
+          nullable: true
+        powerConsumption:
+          $ref: '#/components/schemas/WeightRating'
+        externalPowerSupplyMaxOutput:
+          $ref: '#/components/schemas/WeightRating'
+        heatingAndCooling:
+          $ref: '#/components/schemas/HeatingAndCooling'
+        lighting:
+          $ref: '#/components/schemas/Lighting'
+      description: Energy Rating Details
+    EnrichedItem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The enriched name for the product
+          nullable: true
+        origin:
+          type: string
+          description: The origin of product whether Marketplace or Operator
+          nullable: true
+        description:
+          type: string
+          description: Item full description
+          nullable: true
+        baseProduct:
+          $ref: '#/components/schemas/BaseItemType'
+        variantValueCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariantOption'
+          description: The variant value category enriched at the variant
+          nullable: true
+        brand:
+          $ref: '#/components/schemas/Brand'
+        otherImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaType'
+          description: Other product images
+          nullable: true
+        videos:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaType'
+          description: Product videos
+          nullable: true
+        keySellingPoints:
+          type: array
+          items:
+            type: string
+          description: Key Selling features for the product
+          nullable: true
+        microSiteKeySellingPoint:
+          type: array
+          items:
+            type: string
+          description: MicroSite Key Selling features for the product
+          nullable: true
+        warrantyInformation:
+          type: string
+          description: Warranty information for the product
+          nullable: true
+        installationInformation:
+          type: string
+          description: Installation information for the product
+          nullable: true
+        sustainabilityInformation:
+          type: string
+          description: Sustainability information for the product
+          nullable: true
+        deliveryInformation:
+          type: string
+          description: Delivery information for the product
+          nullable: true
+        showServices:
+          type: boolean
+          description: Show Service for the product
+        availableServices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+          description: Product available services
+          nullable: true
+        productDimensions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDimension'
+          description: Product dimensions
+          nullable: true
+        classification:
+          $ref: '#/components/schemas/Classification'
+        warrantyDocument:
+          $ref: '#/components/schemas/MediaType'
+        specificationsDocument:
+          $ref: '#/components/schemas/MediaType'
+        brochureDocument:
+          $ref: '#/components/schemas/MediaType'
+        installationGuideDocument:
+          $ref: '#/components/schemas/MediaType'
+        userGuideDocument:
+          $ref: '#/components/schemas/MediaType'
+        instructionsDocument:
+          $ref: '#/components/schemas/MediaType'
+        materialSafetyDataSheet:
+          $ref: '#/components/schemas/MediaType'
+        sDoCForm:
+          $ref: '#/components/schemas/MediaType'
+        webDisclaimer:
+          type: string
+          description: The disclaimer to be displayed on the site
+          nullable: true
+        forHireFlag:
+          type: boolean
+          description: denotes if the item is available for hire
+        fscFlag:
+          type: boolean
+          description: Is Forest Stewardship Council Certified
+        bestSellerFlag:
+          type: boolean
+          description: Flag if the product is a best seller product
+        newArrivalFlag:
+          type: boolean
+          description: Flag if the product is a new arrival
+        picture:
+          $ref: '#/components/schemas/MediaType'
+        size:
+          type: string
+          description: The enriched product sizing
+          nullable: true
+        weight:
+          type: string
+          description: The enriched product weight
+          nullable: true
+        volume:
+          type: string
+          description: The enriched product volume
+          nullable: true
+        modelName:
+          type: string
+          description: Model Name that is enriched in PCM by Supplier.
+          nullable: true
+        modelNumber:
+          type: string
+          description: Model Number that is enriched in PCM by Supplier
+          nullable: true
+        colour:
+          type: string
+          description: Variant colour that is enriched in PCM
+          nullable: true
+        familyColour:
+          type: string
+          description: Variant's family colour  that is enriched in PCM
+          nullable: true
+        hexCodeColour:
+          type: string
+          description: HexCode colour information of the product
+          nullable: true
+        material:
+          type: string
+          description: Variant Material that is enriched in PCM by Supplier
+          nullable: true
+        suppliers:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrichedSupplier'
+          description: Suppliers
+          nullable: true
+        isWebVisible:
+          type: string
+          description: Is Product active on web
+          nullable: true
+        familyTree:
+          type: string
+          description: Family tree structure of a product
+          nullable: true
+        webPurchasable:
+          type: string
+          description: denotes if the item is available for web purchase
+          nullable: true
+        navCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+          description: Navigation categories
+          nullable: true
+      description: Contain item enriched details
+    EnrichedSupplier:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Unique and mandatory code for brand
+          nullable: true
+        name:
+          type: string
+          description: Name of the brand
+          nullable: true
+      description: Enriched supplier info
+    EntryPoint:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+          readOnly: true
+      description: Entry point
+    Facet:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the facet.
+          nullable: true
+        displayName:
+          type: string
+          description: The display name of the facet.
+          nullable: true
+        type:
+          type: string
+          description: The type of the facet.
+          nullable: true
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacetValue'
+          description: The list of facet values.
+          nullable: true
+      description: 'Represents a facet, which allows users to filter search results by specific criteria.'
+    FacetRequest:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          minLength: 1
+          type: string
+          description: "This is the identifier of the filter.\r\nIt can be a category, a product range, a brand name, or a price range."
+        value:
+          type: string
+          description: "This is the value of the filter. It can be a specific category,\r\na specific brand name,\r\nor a specific availability status."
+          nullable: true
+        startRange:
+          type: number
+          description: "This field is used when the filter is a range,\r\nlike a price range. They represent the start and the end of the range, respectively."
+          format: double
+          nullable: true
+        endRange:
+          type: number
+          description: "This field is used when the filter is a range,\r\nlike a price range. They represent the start and the end of the range, respectively."
+          format: double
+          nullable: true
+        endInclusive:
+          type: boolean
+          description: The field determines whether the upper boundary (end) of a range is included in the range itself.
+          nullable: true
+      description: Facet
+    FacetValue:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The display name of the facet value.
+          nullable: true
+        isSelected:
+          type: boolean
+          description: Indicates whether the facet value is selected.
+        resultCount:
+          type: integer
+          description: The number of results for the facet value.
+          format: int32
+        value:
+          type: string
+          description: The value of the facet value (if applicable).
+          nullable: true
+        endInclusive:
+          type: boolean
+          description: The field determines whether the upper boundary (end) of a range is included in the range itself.
+          nullable: true
+        startRange:
+          type: number
+          description: The start range of the facet value (if applicable).
+          format: double
+          nullable: true
+        endRange:
+          type: number
+          description: The end range of the facet value (if applicable).
+          format: double
+          nullable: true
+      description: 'Represents a value within a facet, allowing users to filter search results.'
+    FamilyTree:
+      type: object
+      properties:
+        iD:
+          type: string
+          description: This is the unique ID that represents the full hierarchy (at its greatest depth) that the item resides under.
+          nullable: true
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Node'
+          description: list of items
+          nullable: true
+      description: The family tree within this item resides
+    Feature:
+      type: object
+      properties:
+        attributeName:
+          type: string
+          description: Name of the attribute
+          nullable: true
+        attributeValue:
+          type: string
+          description: 'Value of the attribute. For Multi valued attribute, it would be comma seperated string'
+          nullable: true
+      description: Feature
+    FiltersRequest:
+      required:
+        - facets
+        - locationCode
+      type: object
+      properties:
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacetRequest'
+          description: This is a list of filters that the user wants to apply.
+          nullable: true
+        locationCode:
+          minLength: 1
+          type: string
+          description: This is the criterion that the user wants to use to sort the search results.
+        availableInStoreAllProducts:
+          $ref: '#/components/schemas/AvailableInStore'
+      description: This is an object that contains all the filters that the user wants to apply to the search.
+    ForbiddenRequestsProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+      additionalProperties: { }
+      description: 'The request contained valid data and was understood by the server, but the server is refusing action. This may be due to the user not having the necessary permissions for a resource or needing an account of some sort, or attempting a prohibited action (e.g. creating a duplicate record where only one is allowed). This code is also typically used if the request provided authentication via the WWW-Authenticate header field, but the server did not accept that authentication. The request should not be repeated.'
+    ForeignSupplier:
+      type: object
+      properties:
+        incoTerms:
+          type: string
+          description: "The IncoTerms (see https://en.wikipedia.org/wiki/Incoterms)\r\nthat purchases from this supplier\r\nfor this item will be under"
+          nullable: true
+        foreignSupplierCode:
+          type: string
+          description: Items foreign supplier code.
+          nullable: true
+      description: Details related to foreign suppliers.
+    FulfilmentDetails:
+      type: object
+      properties:
+        deliveryType:
+          $ref: '#/components/schemas/DeliveryTypeClass'
+        freightType:
+          $ref: '#/components/schemas/DeliveryTypeClass'
+        isDirectDelivery:
+          type: boolean
+          description: "Is the item available for direct delivery only.\r\nIf IsDirectDelivery is true and FreightType is blank then it is the Direct Delivery item that doesn't incur freight charges."
+        leadTimes:
+          $ref: '#/components/schemas/LeadTimes'
+      description: " It is assumed all values are in days and is calculated based upon calculated Rank 1 Supplier.\r\nThis element contains logistical information for the item."
+    GenericValidationErrorsProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ValidationError'
+            nullable: true
+          description: "Returns list of custom validation error with error code.\r\nExample:\r\n \"errors\": {\r\n    \"transactionRef\": [\r\n        { \"message\": \"Transaction reference number must be 20 digits number.\", \"code\": \"E-TRA-0001\" },\r\n        { \"message\": \"Transaction reference number cannot start with 6 (this is just an example).\", \"code\": \"E-TRA-0002\" }\r\n    ],\r\n    \"end\": [\r\n        { \"message\": \"The selected date range must be no larger than 90 days, selected range is 113 days\", \"code\": \"E-TRA-003\" }\r\n    ]\r\n}\r\nFind details here https://bunnings.atlassian.net/wiki/spaces/BAT/pages/6715213433/Error+Codes"
+          nullable: true
+      additionalProperties: { }
+      description: GenericValidationErrorsProblemDetails
+    HateOasLinks:
+      type: object
+      properties:
+        rel:
+          type: string
+          description: Gets or sets the rel.
+          nullable: true
+        href:
+          type: string
+          description: Gets or sets the href.
+          nullable: true
+        methods:
+          type: array
+          items:
+            type: string
+          description: Gets or sets the methods.
+          nullable: true
+      description: Hypermedia links
+    HazardousContent:
+      type: object
+      properties:
+        measure:
+          $ref: '#/components/schemas/WeightRating'
+        chemicalIngredients:
+          $ref: '#/components/schemas/ChemicalIngredients'
+      description: Hazardous contents informations
+    HeatingAndCooling:
+      type: object
+      properties:
+        rating:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+          description: Energy rating of lighting type
+          nullable: true
+      description: Energy Ratings associated with lighting
+    Hierarchy:
+      type: object
+      properties:
+        childBarcode:
+          maxLength: 14
+          minLength: 8
+          type: string
+          description: "The bar code number for this product. A bar code can be 8 to g``943 digits\r\n    for the item bar code itself.And package bar codes can be 14 digits."
+          nullable: true
+        childQuantity:
+          type: number
+          description: Quanitity of children contained within this pack.
+          format: double
+        baseUnitBarcode:
+          maxLength: 14
+          minLength: 8
+          type: string
+          description: "The bar code number for this product. A bar code can be 8 to g``943 digits\r\n    for the item bar code itself.And package bar codes can be 14 digits."
+          nullable: true
+        baseUnitQuantity:
+          type: number
+          description: Number of base units contained within this pack.
+          format: double
+      description: Packaging Hierarchy barcode and quantity
+    InStoreLocation:
+      type: object
+      properties:
+        aisle:
+          type: string
+          description: Aisle id in store
+          nullable: true
+        aisleIsLabeled:
+          type: boolean
+          description: Does the aisle have a visible label within the store.
+        aisleDescription:
+          type: string
+          description: Aisle Description in store
+          nullable: true
+        bay:
+          type: string
+          description: Bay id in the given aisle in store
+          nullable: true
+        sequence:
+          type: string
+          description: Sequence number for the item within the bay
+          nullable: true
+      description: In store location details of item
+    Item:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+          readOnly: true
+        itemNumber:
+          type: string
+          description: The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+          nullable: true
+        brand:
+          type: string
+          description: Brand Name
+          nullable: true
+        comparisonUom:
+          $ref: '#/components/schemas/ComparisonUom'
+        description:
+          $ref: '#/components/schemas/Description'
+        familyTree:
+          $ref: '#/components/schemas/FamilyTree'
+        unspscCode:
+          type: string
+          description: This is the UNSPSC code that represents the type of item.
+          nullable: true
+        startDate:
+          type: string
+          description: The date time this item starts in the system.
+          format: date-time
+        endDate:
+          type: string
+          description: The date time this item ends in the system.
+          format: date-time
+          nullable: true
+        lastUpdate:
+          type: string
+          description: The date time this item was last updated.
+          format: date-time
+        taxInformation:
+          $ref: '#/components/schemas/TaxInformation'
+        itemType:
+          type: string
+          description: item type
+          nullable: true
+        minimumGrades:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinimumGrade'
+          description: Array of minimum grades of an item based on location types.
+          nullable: true
+        saleUnitOfMeasure:
+          type: string
+          description: 'The unit of measure this item is sold in, EACH, L/M ...'
+          nullable: true
+        productOffer:
+          type: string
+          description: "This is the different methods in which a product is offered\r\nenum:\r\n   - Standard\r\n   - Custom Made\r\n   - Made To Order\r\ndefault: Standard"
+          nullable: true
+        barcodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Barcode'
+          description: The complete set of barcodes connected to this item.
+          nullable: true
+        sourcing:
+          $ref: '#/components/schemas/Sourcing'
+        zoningInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/Zone'
+          description: Zoning information
+          nullable: true
+        ratingsRiskAndCompliance:
+          $ref: '#/components/schemas/RatingsRiskAndCompliance'
+        usageAttributes:
+          $ref: '#/components/schemas/UsageAttributes'
+        wholeUnitOnly:
+          type: boolean
+          description: Whole Unit Only
+          nullable: true
+        searchable:
+          type: boolean
+          description: Searchable
+          nullable: true
+        sellable:
+          type: boolean
+          description: Sellable
+          nullable: true
+        tradeOnlyItem:
+          type: boolean
+          description: Flag to indicate if item is trade only
+          nullable: true
+        saleUomSplittingRules:
+          $ref: '#/components/schemas/SaleUomSplittingRulesType'
+        enrichedData:
+          $ref: '#/components/schemas/EnrichedItem'
+        relationships:
+          type: array
+          items:
+            $ref: '#/components/schemas/Relationship'
+          description: Array of relationships of an item.
+          nullable: true
+        correlation:
+          $ref: '#/components/schemas/Correlation'
+        packagingHierarchy:
+          $ref: '#/components/schemas/PackagingHierarchy'
+      description: Items
+    ItemDetails:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+          description: List of Items
+          nullable: true
+      description: Item details
+    ItemLocationMessage:
+      type: object
+      properties:
+        messageId:
+          type: string
+          description: Message Identifier
+          nullable: true
+        itemNumber:
+          type: string
+          description: The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+          nullable: true
+        locationCode:
+          type: string
+          description: Message for this location
+          nullable: true
+        country:
+          $ref: '#/components/schemas/CountryCode'
+        text:
+          type: string
+          description: Message text
+          nullable: true
+        caption:
+          type: string
+          description: Message caption
+          nullable: true
+        icon:
+          type: string
+          description: 'Type of icon e.g. Stop, Warning, Hand'
+          nullable: true
+        helpContext:
+          type: string
+          description: Help context
+          nullable: true
+        severity:
+          type: string
+          description: Severity of this message
+          nullable: true
+        displayRule:
+          type: string
+          description: 'Display rule e.g. 1, 2'
+          nullable: true
+        saleRule:
+          type: string
+          description: Sale rule e.g. 1
+          nullable: true
+        showContact:
+          type: boolean
+          description: Flag which indicates whether to show contact
+        familyTreeList:
+          type: string
+          description: Family tree list
+          nullable: true
+        endDate:
+          type: string
+          description: End date for the message
+          format: date-time
+          nullable: true
+        lastUpdated:
+          type: string
+          description: Last updated
+          format: date-time
+      description: Item message for a location
+    ItemLocationSearchV1_2:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+          readOnly: true
+        itemNumber:
+          pattern: '[0-9]{7}'
+          type: string
+          description: The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+          nullable: true
+        locationCode:
+          pattern: '[0-9]{4}'
+          type: string
+          description: The location this location specific information relates to
+          nullable: true
+        itemStatus:
+          type: string
+          description: Status of the item for the location
+          nullable: true
+        isOnRecall:
+          type: boolean
+          description: Is the item recalled
+        isRanged:
+          type: boolean
+          description: The ranging status of the item
+        availability:
+          type: string
+          description: Availability info
+          nullable: true
+        primaryBarcode:
+          pattern: '[A-Za-z0-9:\.\-_=+#\/\*]{8,14}'
+          type: string
+          description: Primary barcode
+          nullable: true
+        inStoreLocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InStoreLocation'
+          description: Locations that the item can be found within the store
+          nullable: true
+        suppliers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemLocationSupplier'
+          description: Suppliers of the product for this location
+          nullable: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemLocationMessage'
+          description: Messages to an item for this location
+          nullable: true
+      description: This resource provides items ranged to a specific location.
+    ItemLocationSupplier:
+      type: object
+      properties:
+        supplierCode:
+          type: string
+          description: A unique identifier for this supplier a supplier code is an alphanumeric string
+          nullable: true
+        siteCode:
+          type: string
+          description: Unique identifier for this purchasing site.
+          nullable: true
+        priority:
+          type: integer
+          description: Order priority for this item and supplier
+          format: int64
+          nullable: true
+        startDate:
+          type: string
+          description: The date time this supplier starts in the system.
+          format: date-time
+        endDate:
+          type: string
+          description: The data time this supplier is archived.
+          format: date-time
+          nullable: true
+      description: Suppliers of the product for this location
+    ItemLocationV1_2:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+          readOnly: true
+        itemNumber:
+          pattern: '[0-9]{7}'
+          type: string
+          description: The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+          nullable: true
+        locationCode:
+          pattern: '[0-9]{4}'
+          type: string
+          description: The location this location specific information relates to
+          nullable: true
+        itemStatus:
+          type: string
+          description: Status of the item for the location
+          nullable: true
+        itemDetail:
+          $ref: '#/components/schemas/Item'
+        isOnRecall:
+          type: boolean
+          description: Is the item recalled
+        isRanged:
+          type: boolean
+          description: The ranging status of the item
+        availability:
+          type: string
+          description: Availability info
+          nullable: true
+        primaryBarcode:
+          pattern: '[A-Za-z0-9:\.\-_=+#\/\*]{8,14}'
+          type: string
+          description: Primary barcode
+          nullable: true
+        inStoreLocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InStoreLocation'
+          description: Locations that the item can be found within the store
+          nullable: true
+        suppliers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemLocationSupplier'
+          description: Suppliers of the product for this location
+          nullable: true
+        isSellableInStore:
+          type: boolean
+          description: Is this item sellable in store
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemLocationMessage'
+          description: Messages to an item for this location
+          nullable: true
+      description: This resource provides items ranged to a specific location.
+    JurisdictionType:
+      enum:
+        - Domestic
+        - Foreign
+      type: string
+      description: Jurisdiction Types
+    LeadTimes:
+      type: object
+      properties:
+        supplierDispatch:
+          type: string
+          description: Time taken for the supplier to process the order ready for shipment to destination
+          nullable: true
+        supplierToBunnings:
+          type: string
+          description: 'Time for shipment from supplier to Bunnings Location, i.e. transit time'
+          nullable: true
+        supplierToCustomer:
+          type: string
+          description: This is the Direct Delivery shipment Lead time. From supplier to customer location
+          nullable: true
+        bunningsDispatch:
+          type: string
+          description: Duration taken for Bunnings loaction to deliver item to customer location once item has been recieved by the store.
+          nullable: true
+      description: Lead times for product transition events.
+    Lighting:
+      type: object
+      properties:
+        rating:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnergyRating'
+          description: Energy rating of lighting type
+          nullable: true
+      description: lighting
+    LinkedTimberChildRelationship:
+      type: object
+      properties:
+        childItem:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildItem'
+          description: A list of child items
+          nullable: true
+      description: Linked Timber Child Relationship of an item.
+    LinkedTimberParentRelationship:
+      type: object
+      properties:
+        parentItemNumber:
+          type: string
+          description: Parent Item Number
+          nullable: true
+        MultipleOfParent:
+          type: number
+          description: Multiple of Parent
+          format: decimal
+      description: Linked Timber Parent Relationship of an item.
+    LocationRestrictions:
+      enum:
+        - ALL
+        - NONE
+        - LIST
+      type: string
+      description: Type of restrictions based on location
+    Locations:
+      type: object
+      properties:
+        location:
+          pattern: '[0-9]{4}'
+          type: array
+          items:
+            type: string
+          description: list of locations
+          nullable: true
+      description: locations
+    Measurement:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+          description: unit of measurement
+          nullable: true
+        value:
+          type: number
+          description: Volume
+          format: double
+          nullable: true
+      description: Volume measurement
+    MediaType:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Unique and mandatory code for media asset
+          nullable: true
+        primaryAssetURL:
+          type: string
+          description: URL for Media. Public URL to for Image or thumbnail image of video
+          nullable: true
+        secondaryAssetURL:
+          type: string
+          description: BrightCove ID of video
+          nullable: true
+        name:
+          type: string
+          description: Name of the Media
+          nullable: true
+        disclaimer:
+          type: string
+          description: disclaimer for the Media
+          nullable: true
+        mime:
+          type: string
+          description: MIME Type for the Media
+          nullable: true
+        associatedTo:
+          $ref: '#/components/schemas/DocumentSection'
+        associatedToSpecified:
+          type: boolean
+          description: Is MIME Type for the Media provided
+      description: Logo for the brand
+    MinimumGrade:
+      type: object
+      properties:
+        locationType:
+          type: string
+          description: 'The location type this grade is related for.  Examples Warehouse, Trade Centre, FrameAndTruss, DC'
+          nullable: true
+        grade:
+          type: string
+          description: Grade level descriptor
+          nullable: true
+      description: Minimum grade of an item based on location types
+    MissingResourceProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+      additionalProperties: { }
+      description: A machine-readable format for specifying resource not found errors in HTTP API responses based on https://tools.ietf.org/html/rfc7807
+    Node:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the family tree level e.g. Category or Department
+          nullable: true
+        level:
+          type: integer
+          description: 'The level number, this should be unique, e.g. Category = Level 1, Department = Level 2'
+          format: int32
+        value:
+          type: string
+          description: Value for this family tree node e.g. Building Material
+          nullable: true
+      description: Family Tree Information(Category|Department)
+    Origin:
+      type: object
+      properties:
+        country:
+          type: string
+          description: country
+          nullable: true
+        factory:
+          type: string
+          description: factory
+          nullable: true
+      description: Product Origin
+    OverridingSupplier:
+      type: object
+      properties:
+        supplierCode:
+          type: string
+          description: supplier code
+          nullable: true
+        startDate:
+          type: string
+          description: start date
+          format: date-time
+          nullable: true
+        endDate:
+          type: string
+          description: end date
+          format: date-time
+          nullable: true
+        packQty:
+          type: number
+          description: package quantity
+          format: double
+          nullable: true
+        packUOM:
+          type: string
+          description: package uom
+          nullable: true
+        supplierBarcodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierBarCode'
+          description: supplier barcodes
+          nullable: true
+        countriesOfOrigin:
+          type: array
+          items:
+            $ref: '#/components/schemas/Origin'
+          description: supplier barcodes
+          nullable: true
+        costs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CostDetail'
+          description: cost details
+          nullable: true
+        reason:
+          type: string
+          description: reason
+          nullable: true
+      description: overriding supplier
+    PackagingHierarchy:
+      type: object
+      properties:
+        outerBarcodes:
+          $ref: '#/components/schemas/PackagingHierarchyBarcodes'
+        innerBarcodes:
+          $ref: '#/components/schemas/PackagingHierarchyBarcodes'
+      description: The complete set of inner and outer barcodes connected to the item.
+    PackagingHierarchyBarcode:
+      type: object
+      properties:
+        number:
+          type: string
+          description: A bar code that belongs to this item.
+          nullable: true
+        level:
+          type: string
+          description: "Is this a barcode for one unit of this item or a case of them.\r\nBarcodeLevelValues:\r\n   A Consumer barcode is a barcode on the item that will be sold to the consumer.\r\n   A Case barcode is a barcode on a shipping carton containing x number of the consumer item.\r\n enum:\r\n   - Consumer\r\n   - Case"
+          nullable: true
+        packaging:
+          type: array
+          items:
+            $ref: '#/components/schemas/Box'
+          description: "Packaging information regarding the number, size, volume, weight of the components that make up the item.\r\nPackaging information is at manufacturer level, manufacturers are allocated barcodes not suppliers."
+          nullable: true
+        hierarchy:
+          $ref: '#/components/schemas/Hierarchy'
+        AdditionalDescription:
+          type: string
+          description: "Additional description for the barcoded product e.g. for greenlife this is most likely to be the\r\nbotanical name of the product"
+          nullable: true
+        supplierItemNumber:
+          type: string
+          description: Item number for this product designate within the suppliers systems.
+          nullable: true
+        itemNumber:
+          type: string
+          description: Item number of the outer or inner item in the packaging hiearchy
+          nullable: true
+      description: Packageing hierarchy barcode type
+    PackagingHierarchyBarcodes:
+      type: object
+      properties:
+        barcode:
+          type: array
+          items:
+            $ref: '#/components/schemas/PackagingHierarchyBarcode'
+          description: Packaging hierarchy barcodes
+          nullable: true
+      description: The complete set of barcodes connected to this item.
+    PendingStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Next pending Status of the item
+          nullable: true
+        date:
+          type: string
+          description: Datetime it becomes effective
+          format: date-time
+      description: pending status
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+      additionalProperties: { }
+      description: A machine-readable format for specifying errors in HTTP API responses based on https://tools.ietf.org/html/rfc7807.
+    ProductDimension:
+      type: object
+      properties:
+        productDimensionLabel:
+          type: string
+          description: The dimenesion Label for product
+          nullable: true
+        productDimensionWidth:
+          type: number
+          description: The width of the product
+          format: decimal
+        productDimensionHeight:
+          type: number
+          description: The height of the product
+          format: decimal
+        productDimensionDepth:
+          type: number
+          description: The depth/length of the product
+          format: decimal
+      description: Product dimension info
+    Rating:
+      type: object
+      properties:
+        ratingName:
+          type: string
+          description: Rating name
+          nullable: true
+        value:
+          $ref: '#/components/schemas/WeightRating'
+      description: 'Energy rating for heating and cooling products, this includes hot water systems'
+    RatingsRiskAndCompliance:
+      type: object
+      properties:
+        highRisk:
+          type: string
+          description: high risk
+          nullable: true
+        supplierDeclarationsOfConformity:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentUrl'
+          description: supplier declaration of conformity
+          nullable: true
+        weightRating:
+          $ref: '#/components/schemas/WeightRating'
+        safetyStandards:
+          $ref: '#/components/schemas/SafetyStandards'
+        dangerousGood:
+          $ref: '#/components/schemas/DangerousGood'
+        timberProduct:
+          $ref: '#/components/schemas/TimberProduct'
+        buildingProduct:
+          $ref: '#/components/schemas/BuildingProduct'
+        wels:
+          $ref: '#/components/schemas/Wels'
+        energyRatings:
+          $ref: '#/components/schemas/EnergyRatings'
+      description: ratings Risk and Compliance
+    Relationship:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of relationship
+          nullable: true
+        linkedTimberParentRelationship:
+          $ref: '#/components/schemas/LinkedTimberParentRelationship'
+        linkedTimberChildRelationship:
+          $ref: '#/components/schemas/LinkedTimberChildRelationship'
+      description: Relationship of an item.
+    Restriction:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/RestrictionType'
+        locations:
+          $ref: '#/components/schemas/Locations'
+        locationRestrictions:
+          $ref: '#/components/schemas/LocationRestrictions'
+        saleQuantity:
+          $ref: '#/components/schemas/SaleQuantity'
+        minimumAge:
+          type: integer
+          description: Minumum Age applicable to Restriction
+          format: int32
+      description: "Restriction Types\r\n-  RESTRICTED Item is for sale at restricted locations however is visible to all locations\r\n- EXCLUSIVE Item is for exclusive sale at restricted locations(e.g.Trade Centre only items), all other locations are unable to see or sell this product"
+    RestrictionSizing:
+      type: object
+      properties:
+        maxQuantity:
+          type: integer
+          description: Maximum UOM quanity that can be sold.
+          format: int64
+        maxLength:
+          type: number
+          description: 'Maximum length of an item that can be purchased (e.g. Timber Tally, rope, shade cloth)'
+          format: double
+      description: Max Quantity and Max length of an item that can be purchased
+    RestrictionType:
+      enum:
+        - Unknown
+        - RESTRICTED
+        - EXCLUSIVE
+        - SALE_QUANTITY
+        - AGE
+      type: string
+      description: Restriction Types
+    SafetyStandards:
+      type: object
+      properties:
+        aCCCMandatoryStandard:
+          type: string
+          description: "Mandatory safety standards are made for products that are likely to be especially hazardous. Information\r\nrequires suppliers to give consumers prescribed information when they purchase specified goods, for example\r\nblinds, curtains and window fittings, fire extinguishers, trolley jacks, portable swimming pools, etc.\r\nFor full list visit the ACCC website."
+          nullable: true
+        standards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Standard'
+          description: Definitions of standards and their reference number
+          nullable: true
+        safetyDataSheet:
+          $ref: '#/components/schemas/DocumentUrl'
+      description: Safety standards type that may be applicable to an item
+    SaleQuantity:
+      type: object
+      properties:
+        iD:
+          type: string
+          description: The identifier of the restriction
+          nullable: true
+        alertBaseMessage:
+          type: string
+          description: Base message that would be shown to a Team Member
+          nullable: true
+        alertCustomerMessage:
+          type: string
+          description: Messages that would be presented to a Customer
+          nullable: true
+        restrictionSizing:
+          $ref: '#/components/schemas/RestrictionSizing'
+        validTransactions:
+          $ref: '#/components/schemas/ValidTransactions'
+      description: Details around the Restricted Items sale
+    SaleUomSplittingRulesType:
+      type: object
+      properties:
+        minimum:
+          type: number
+          description: Minimum
+          format: decimal
+          nullable: true
+        maximum:
+          type: number
+          description: Maximum
+          format: decimal
+          nullable: true
+        increment:
+          type: number
+          description: Increment
+          format: decimal
+          nullable: true
+      description: Sale UOM Splitting Rules Type
+    SearchModelRequest:
+      required:
+        - filters
+        - query
+        - sortBy
+      type: object
+      properties:
+        query:
+          type: string
+          description: This is the search term that the user is looking for.
+        filters:
+          $ref: '#/components/schemas/FiltersRequest'
+        sortBy:
+          minLength: 1
+          type: string
+          description: This is the criterion that the user wants to use to sort the search results.
+      description: Search model
+    SearchResponse:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+          description: The list of search results returned by the query.
+          nullable: true
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Facet'
+          description: The list of facets available for filtering the search results.
+          nullable: true
+      description: 'Represents the response from a search query, including search results and available facets for filtering.'
+    SearchResult:
+      type: object
+      properties:
+        _meta:
+          type: object
+          additionalProperties:
+            type: string
+          description: Gets or sets the meta.
+          nullable: true
+          readOnly: true
+        _links:
+          type: array
+          items:
+            $ref: '#/components/schemas/HateOasLinks'
+          description: The links.
+          nullable: true
+        title:
+          type: string
+          description: The Item title
+          nullable: true
+        itemNumber:
+          type: string
+          description: The item number of the search result.
+          nullable: true
+      description: Represents a search result.
+    ServerErrorProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+      additionalProperties: { }
+      description: ServerErrorProblemDetails
+    Service:
+      type: object
+      properties:
+        serviceName:
+          type: string
+          description: Name of the service
+          nullable: true
+        serviceID:
+          type: string
+          description: Unique and mandatory code for Service
+          nullable: true
+        description:
+          type: string
+          description: 'Optional, description of the service'
+          nullable: true
+        serviceIcon:
+          type: string
+          description: Type of the service
+          nullable: true
+        serviceStatus:
+          type: boolean
+          description: ServiceStatus flag
+        batchCountry:
+          type: string
+          description: 'Mandatory, Country of the service'
+          nullable: true
+      description: Product service info
+    Sourcing:
+      type: object
+      properties:
+        suppliers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier'
+          description: suppliers
+          nullable: true
+        overridingSuppliers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OverridingSupplier'
+          description: overriding suppliers
+          nullable: true
+      description: Sourcing
+    Standard:
+      type: object
+      properties:
+        standardName:
+          type: string
+          description: "The type of domestic or international technical standard that the product is accredited/tested to,\r\ni.e.AS(Australian Standard), EU, US or ISO standards, FSC (Forest Management / Chain of Custody),\r\nAFS, PEFC, AS/NZS, etc."
+          nullable: true
+        referenceNumber:
+          type: string
+          description: "Relates to the actual standard or certificate reference number that applies to the products\r\naccreditation or registration under the standard type, e.g.the standard type is AS/NZS the\r\n   certification reference number is 3019."
+          nullable: true
+      description: Definition of a standard and its reference number
+    Supplier:
+      type: object
+      properties:
+        supplierCode:
+          type: string
+          description: supplier code
+          nullable: true
+        startDate:
+          type: string
+          description: start date
+          format: date-time
+          nullable: true
+        endDate:
+          type: string
+          description: end date
+          format: date-time
+          nullable: true
+        packQty:
+          type: number
+          description: package quantity
+          format: double
+          nullable: true
+        packUOM:
+          type: string
+          description: package uom
+          nullable: true
+        supplierBarcodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierBarCode'
+          description: supplier barcodes
+          nullable: true
+        countriesOfOrigin:
+          type: array
+          items:
+            $ref: '#/components/schemas/Origin'
+          description: supplier barcodes
+          nullable: true
+        costs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CostDetail'
+          description: cost details
+          nullable: true
+        jurisdiction:
+          $ref: '#/components/schemas/JurisdictionType'
+        foreignSupplier:
+          $ref: '#/components/schemas/ForeignSupplier'
+      description: supplier info
+    SupplierBarCode:
+      type: object
+      properties:
+        number:
+          type: string
+          description: A bar code that belongs to this item.
+          nullable: true
+        level:
+          type: string
+          description: "Is this a barcode for one unit of this item or a case of them.\r\nBarcodeLevelValues:\r\n   A Consumer barcode is a barcode on the item that will be sold to the consumer.\r\n   A Case barcode is a barcode on a shipping carton containing x number of the consumer item.\r\n enum:\r\n   - Consumer\r\n   - Case"
+          nullable: true
+        packaging:
+          type: array
+          items:
+            $ref: '#/components/schemas/Box'
+          description: "Packaging information regarding the number, size, volume, weight of the components that make up the item.\r\nPackaging information is at manufacturer level, manufacturers are allocated barcodes not suppliers."
+          nullable: true
+        hierarchy:
+          $ref: '#/components/schemas/Hierarchy'
+        AdditionalDescription:
+          type: string
+          description: "Additional description for the barcoded product e.g. for greenlife this is most likely to be the\r\nbotanical name of the product"
+          nullable: true
+        supplierItemNumber:
+          type: string
+          description: Item number for this product designate within the suppliers systems.
+          nullable: true
+        primary:
+          type: boolean
+          description: "The primary bar code for this item for this supplier only one bar code for an item\r\nsupplier can be the primary."
+      description: Supplier bar code
+    SupplierCompliance:
+      type: object
+      properties:
+        supplierCode:
+          type: string
+          description: Supplier code
+          nullable: true
+        certificationClaim:
+          type: string
+          description: The products marked FSC/PEFC/AFS or similar timber certification logo/claim
+          nullable: true
+        certificationCode:
+          type: string
+          description: The full certificate number or licence code as it appears on the product for verification.
+          nullable: true
+      description: Suppliers compliance data containing certificatio claim and certification code.
+    TaxInformation:
+      type: object
+      properties:
+        taxCode:
+          type: string
+          description: The tax code for this product. Using the tax code a tax rate for a period can be established.
+          nullable: true
+        taxRate:
+          type: number
+          description: Current tax rate of the item.
+          format: double
+      description: Tax code and tax rate for the item
+    TimberProduct:
+      type: object
+      properties:
+        supplierCompliance:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierCompliance'
+          description: Suppliers compliance data containing certificatio claim and certification code.
+          nullable: true
+      description: Specific timber product certification data
+    Toilet:
+      type: object
+      properties:
+        fullFlush:
+          $ref: '#/components/schemas/WeightRating'
+        halfFlush:
+          $ref: '#/components/schemas/WeightRating'
+        averageFlush:
+          $ref: '#/components/schemas/WeightRating'
+      description: toilet
+    TooManyRequestsProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+      additionalProperties: { }
+      description: TooManyRequestsProblemDetails
+    TransactionType:
+      enum:
+        - SALE
+        - RETURN
+      type: string
+      description: he types of transactions that can occur
+    UsageAttributes:
+      type: object
+      properties:
+        productCoverage:
+          $ref: '#/components/schemas/WeightRating'
+      description: usage attribute
+    ValidTransactions:
+      type: object
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionType'
+      description: The type of transaction that this restriction applies to
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Custom validation error message.
+          nullable: true
+        code:
+          type: string
+          description: "Custom error code.\r\nExample: E-TRA-0001\r\nFind details here https://bunnings.atlassian.net/wiki/spaces/BAT/pages/6715213433/Error+Codes"
+          nullable: true
+        instance:
+          type: string
+          description: The action route the validation failed against.
+          nullable: true
+        correlationId:
+          type: string
+          description: The provided correlation id.
+          nullable: true
+        traceId:
+          type: string
+          description: Internal trace id.
+          nullable: true
+      description: Custom validation error with error code.
+    ValidationErrorsProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "A URI reference [RFC3986] that identifies the problem type. This specification encourages that, when\r\ndereferenced, it provide human-readable documentation for the problem type\r\n(e.g., using HTML [W3C.REC-html5-20141028]).  When this member is not present, its value is assumed to be\r\n\"about:blank\"."
+          nullable: true
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem type.It SHOULD NOT change from occurrence to occurrence\r\nof the problem, except for purposes of localization(e.g., using proactive content negotiation;\r\nsee[RFC7231], Section 3.4)."
+          nullable: true
+        status:
+          type: integer
+          description: 'The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.'
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          nullable: true
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem.It may or may not yield further information if dereferenced.
+          nullable: true
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/ValidationError'
+            nullable: true
+          description: "Returns list of custom validation error with error code.\r\nExample:\r\n \"errors\": {\r\n    \"transactionRef\": [\r\n        { \"message\": \"Transaction reference number must be 20 digits number.\", \"code\": \"E-TRA-0001\" },\r\n        { \"message\": \"Transaction reference number cannot start with 6 (this is just an example).\", \"code\": \"E-TRA-0002\" }\r\n    ],\r\n    \"end\": [\r\n        { \"message\": \"The selected date range must be no larger than 90 days, selected range is 113 days\", \"code\": \"E-TRA-003\" }\r\n    ]\r\n}\r\nFind details here https://bunnings.atlassian.net/wiki/spaces/BAT/pages/6715213433/Error+Codes"
+          nullable: true
+      additionalProperties: { }
+      description: A machine-readable format for specifying validation errors in HTTP API responses based on https://tools.ietf.org/html/rfc7807
+    VariantOption:
+      type: object
+      properties:
+        variantValueCategory:
+          type: string
+          description: Variant value category
+          nullable: true
+        variantCategory:
+          type: string
+          description: Variant category
+          nullable: true
+      description: The variant value category enriched at the variant
+    WebCommerceAttributes:
+      type: object
+      properties:
+        visible:
+          type: boolean
+          description: Is the item visible on the web
+        transactable:
+          type: boolean
+          description: Is the item transactable on the web
+        inStorePickup:
+          type: boolean
+          description: Is the item available for in-store pickup
+        AvailableForDelivery:
+          type: boolean
+          description: Is the item available for delivery
+        comment:
+          type: string
+          description: Comment on the item that is web applicable.
+          nullable: true
+      description: List of attributes specifically associated to website data presentation
+    Weight:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+          description: Unit of Measurement
+          nullable: true
+        net:
+          type: number
+          description: Net weight
+          format: double
+        gross:
+          type: number
+          description: Gross weight
+          format: double
+      description: Weight measurement
+    WeightRating:
+      type: object
+      properties:
+        unitOfMeasure:
+          type: string
+          description: unit of measurement
+          nullable: true
+        value:
+          type: number
+          description: Volume
+          format: double
+          nullable: true
+      description: Basic measurement
+    Wels:
+      type: object
+      properties:
+        watermarkCertificate:
+          type: string
+          description: Watermark Certificate
+          nullable: true
+        starRating:
+          type: number
+          description: Star Rating
+          format: double
+          nullable: true
+        consumption:
+          $ref: '#/components/schemas/WeightRating'
+        toilet:
+          $ref: '#/components/schemas/Toilet'
+        dishwasher:
+          $ref: '#/components/schemas/Dishwasher'
+      description: Ratings associated with WELS
+    Zone:
+      type: object
+      properties:
+        retailZone:
+          type: string
+          description: Collection of stores that have the same base price/attributes
+          nullable: true
+        region:
+          type: string
+          description: 'Geographic Region for applicable data, this is not equivalent to political regions'
+          nullable: true
+        status:
+          type: string
+          description: Current status of the item
+          nullable: true
+        pendingStatus:
+          $ref: '#/components/schemas/PendingStatus'
+        restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restriction'
+          description: restrictions
+          nullable: true
+        fulfilmentDetails:
+          $ref: '#/components/schemas/FulfilmentDetails'
+        webCommerceAttributes:
+          $ref: '#/components/schemas/WebCommerceAttributes'
+        bulletinNumber:
+          type: string
+          description: bulletin number
+          nullable: true
+        bulletinDate:
+          type: string
+          description: bulletin date
+          format: date-time
+          nullable: true
+      description: "A Zone represents the intersection of a RetailZone and a Region.  The most practical example of this is where\r\nRetailZone = RZ 1\r\n   but has two geographic regions\r\n   Region = NSW Metro\r\n   Region = ACT\r\n  Prices are the highest within the RetailZone/Region"
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://authorisation-snd.api.bunnings.com.au/connect/authorize
+          scopes:
+            itm:details: Can be used to get the item information we have on file for a country
+        clientCredentials:
+          tokenUrl: https://authorisation-snd.api.bunnings.com.au/connect/token
+          scopes:
+            itm:details: Can be used to get the item information we have on file for a country
+    bearer:
+      type: http
+      description: JWT Authorization header using the Bearer scheme.
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - oauth2:
+      - itm:details
+  - bearer:
+      - itm:details
+tags:
+  - name: Discovery
+    description: Query API's endpoints
+  - name: Item Location
+    description: Get and/or manage Item Location
+  - name: Items
+    description: Get Items information
