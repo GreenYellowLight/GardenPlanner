@@ -1,0 +1,9 @@
+1) take a photo of an area 
+
+2) select a price max 
+3) select plant types
+4) select plants (ai reccomends a few)
+5) ai places plants in garden in an image (maybe just the claude thng)
+
+
+
