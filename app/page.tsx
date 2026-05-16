@@ -5,6 +5,15 @@ import { useState } from "react";
 export default function Page() {
   const [budget, setBudget] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
+  
+
+  //support for searching a list of plants \ 
+  const [plants, setPlants] = useState([])
+  const [shade, setShade ]  = useState("")
+  const [search, setSearch ]  = useState("")
+  const [continent, setContinent] = useState("")
+  const [page, setPage] = useState(1)
+  
 
   return (
     <>
@@ -13,12 +22,12 @@ export default function Page() {
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-10">
-        <p className="text-center text-lg  mb-10">
+        <p className="text-center text-lg mb-10">
           This will help you plan your next gardening endeavour!
         </p>
 
         <div className="flex items-center gap-3 mb-8">
-          <label className="text-lg font-medium  whitespace-nowrap">
+          <label className="text-lg font-medium whitespace-nowrap">
             Enter your budget:
           </label>
           <div className="flex items-center border-2 border-green-400 rounded-lg px-3 py-2 focus-within:border-green-600">
@@ -33,6 +42,14 @@ export default function Page() {
               placeholder="0"
             />
           </div>
+        </div>
+
+        <div>
+        <p>Select plants you want:</p>
+
+         <p>Plants you have selected:</p>    
+
+
         </div>
 
         <div className="flex items-center gap-3 mb-6">

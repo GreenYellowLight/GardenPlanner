@@ -33,6 +33,8 @@ export async function GET() {
       )
     `;
 
+    await sql`TRUNCATE Plant RESTART IDENTITY`;
+
     await sql`
       INSERT INTO Plant (name, price, origin_continent, max_height_cm, max_width_cm, shade_requirement)
       VALUES
