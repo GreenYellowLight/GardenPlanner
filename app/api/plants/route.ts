@@ -14,8 +14,8 @@
     const continent = request.nextUrl.searchParams.get('continent') ?? ''
     const shade = request.nextUrl.searchParams.get('shade') ?? ''
     
-    const searchFilter = search ?  'AND name ILIKE  ${`%${query}%`} ' : sql``  ;
-    const continentFilter = continent ?  'AND origin_continent = ' : sql``  ;
+    const searchFilter = search ? sql`AND name ILIKE ${'%' + search + '%'}` : sql``;
+    const continentFilter = continent ? sql`AND origin_continent::text = ${continent}` : sql``;
     
 
     const rows =  await sql`SELECT *, COUNT(*) OVER() as TOTAL FROM Plant WHERE TRUE ${searchFilter} 

@@ -1,19 +1,49 @@
 
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+type Plant = {
+  id: number;
+  name: string;
+  price: number;
+  origin_continent: string;
+  max_height_cm: number;
+  max_width_cm: number;
+  shade_requirement: string;
+};
+
+const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
+const SHADE_TYPES = ["Full Sun", "Part Shade", "Full Shade"];
 
 export default function Page() {
   const [budget, setBudget] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
-  
 
-  //support for searching a list of plants \ 
-  const [plants, setPlants] = useState([])
-  const [shade, setShade ]  = useState("")
-  const [search, setSearch ]  = useState("")
-  const [continent, setContinent] = useState("")
-  const [page, setPage] = useState(1)
-  
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [shade, setShade] = useState("");
+  const [search, setSearch] = useState("");
+  const [continent, setContinent] = useState("");
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [selected, setSelected] = useState<Plant[]>([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams({ page: String(page), search, continent, shade });
+    fetch(`/api/plants?${params}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setPlants(data.plants ?? []);
+        setPages(data.pages ?? 1);
+      });
+  }, [page, search, continent, shade]);
+
+  function togglePlant(plant: Plant) {
+    setSelected((prev) =>
+      prev.find((p) => p.id === plant.id)
+        ? prev.filter((p) => p.id !== plant.id)
+        : [...prev, plant]
+    );
+  }
 
   return (
     <>
@@ -44,12 +74,122 @@ export default function Page() {
           </div>
         </div>
 
-        <div>
-        <p>Select plants you want:</p>
+        {/* Plant browser */}
+        <div className="mb-10">
+          <p className="text-lg font-medium mb-3">Select plants you want:</p>
 
-         <p>Plants you have selected:</p>    
+          <div className="flex flex-wrap gap-2 mb-4">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search plants..."
+              className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500 flex-1 min-w-32"
+            />
+            <select
+              value={continent}
+              onChange={(e) => { setContinent(e.target.value); setPage(1); }}
+              className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500"
+            >
+              <option value="">All continents</option>
+              {CONTINENTS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select
+              value={shade}
+              onChange={(e) => { setShade(e.target.value); setPage(1); }}
+              className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500"
+            >
+              <option value="">All shade types</option>
+              {SHADE_TYPES.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
 
+          <div className="border-2 border-green-200 rounded-xl overflow-hidden">
+            {plants.length === 0 ? (
+              <p className="text-center text-gray-400 py-8">No plants found</p>
+            ) : (
+              plants.map((plant) => (
+                <div
+                  key={plant.id}
+                  className={`flex items-center justify-between px-4 py-3 border-b border-green-100 last:border-0 ${
+                    selected.find((p) => p.id === plant.id) ? "bg-green-50" : "hover:bg-gray-50"
+                  }`}
+                >
+                  <div>
+                    <span className="font-medium text-green-900">{plant.name}</span>
+                    <span className="ml-2 text-sm text-gray-500">
+                      {plant.origin_continent} · {plant.shade_requirement} · ${Number(plant.price).toFixed(2)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => togglePlant(plant)}
+                    className={`ml-4 px-3 py-1 rounded-lg text-sm font-medium border-2 transition-colors ${
+                      selected.find((p) => p.id === plant.id)
+                        ? "bg-green-700 text-white border-green-700"
+                        : "border-green-400 text-green-700 hover:bg-green-50"
+                    }`}
+                  >
+                    {selected.find((p) => p.id === plant.id) ? "Selected" : "+ Add"}
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
 
+          {pages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 rounded-lg border-2 border-green-300 text-green-700 text-sm disabled:opacity-40 hover:bg-green-50"
+              >
+                ← Prev
+              </button>
+              <span className="text-sm text-gray-500">Page {page} of {pages}</span>
+              <button
+                onClick={() => setPage((p) => Math.min(pages, p + 1))}
+                disabled={page === pages}
+                className="px-3 py-1 rounded-lg border-2 border-green-300 text-green-700 text-sm disabled:opacity-40 hover:bg-green-50"
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Selected plants */}
+        <div className="mb-8">
+          <p className="text-lg font-medium mb-3">
+            Plants you have selected:
+            {selected.length > 0 && (
+              <span className="ml-2 text-green-700">
+                (${selected.reduce((sum, p) => sum + Number(p.price), 0).toFixed(2)} total)
+              </span>
+            )}
+          </p>
+          {selected.length === 0 ? (
+            <p className="text-gray-400 text-sm">No plants selected yet.</p>
+          ) : (
+            <div className="border-2 border-green-200 rounded-xl overflow-hidden">
+              {selected.map((plant) => (
+                <div
+                  key={plant.id}
+                  className="flex items-center justify-between px-4 py-3 border-b border-green-100 last:border-0"
+                >
+                  <div>
+                    <span className="font-medium text-green-900">{plant.name}</span>
+                    <span className="ml-2 text-sm text-gray-500">${Number(plant.price).toFixed(2)}</span>
+                  </div>
+                  <button
+                    onClick={() => togglePlant(plant)}
+                    className="ml-4 px-3 py-1 rounded-lg text-sm font-medium border-2 border-red-300 text-red-500 hover:bg-red-50"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 mb-6">
