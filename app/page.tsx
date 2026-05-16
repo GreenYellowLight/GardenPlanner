@@ -25,7 +25,7 @@ export default function Page() {
   const [continent, setContinent] = useState("");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
-  const [selected, setSelected] = useState<Plant[]>([]);
+  const [selected, setSelected] = useState<{ plant: Plant; qty: number }[]>([]);
 
   useEffect(() => {
     const params = new URLSearchParams({ page: String(page), search, continent, shade });
@@ -37,12 +37,25 @@ export default function Page() {
       });
   }, [page, search, continent, shade]);
 
-  function togglePlant(plant: Plant) {
-    setSelected((prev) =>
-      prev.find((p) => p.id === plant.id)
-        ? prev.filter((p) => p.id !== plant.id)
-        : [...prev, plant]
-    );
+  function addPlant(plant: Plant) {
+    setSelected((prev) => {
+      const existing = prev.find((s) => s.plant.id === plant.id);
+      if (existing) return prev.map((s) => s.plant.id === plant.id ? { ...s, qty: s.qty + 1 } : s);
+      return [...prev, { plant, qty: 1 }];
+    });
+  }
+
+  function removePlant(plant: Plant) {
+    setSelected((prev) => {
+      const existing = prev.find((s) => s.plant.id === plant.id);
+      if (!existing) return prev;
+      if (existing.qty === 1) return prev.filter((s) => s.plant.id !== plant.id);
+      return prev.map((s) => s.plant.id === plant.id ? { ...s, qty: s.qty - 1 } : s);
+    });
+  }
+
+  function qtyOf(plant: Plant) {
+    return selected.find((s) => s.plant.id === plant.id)?.qty ?? 0;
   }
 
   return (
@@ -112,7 +125,7 @@ export default function Page() {
                 <div
                   key={plant.id}
                   className={`flex items-center justify-between px-4 py-3 border-b border-green-100 last:border-0 ${
-                    selected.find((p) => p.id === plant.id) ? "bg-green-50" : "hover:bg-gray-50"
+                    qtyOf(plant) > 0 ? "bg-green-50" : "hover:bg-gray-50"
                   }`}
                 >
                   <div>
@@ -121,16 +134,20 @@ export default function Page() {
                       {plant.origin_continent} · {plant.shade_requirement} · ${Number(plant.price).toFixed(2)}
                     </span>
                   </div>
-                  <button
-                    onClick={() => togglePlant(plant)}
-                    className={`ml-4 px-3 py-1 rounded-lg text-sm font-medium border-2 transition-colors ${
-                      selected.find((p) => p.id === plant.id)
-                        ? "bg-green-700 text-white border-green-700"
-                        : "border-green-400 text-green-700 hover:bg-green-50"
-                    }`}
-                  >
-                    {selected.find((p) => p.id === plant.id) ? "Selected" : "+ Add"}
-                  </button>
+                  {qtyOf(plant) === 0 ? (
+                    <button
+                      onClick={() => addPlant(plant)}
+                      className="ml-4 px-3 py-1 rounded-lg text-sm font-medium border-2 border-green-400 text-green-700 hover:bg-green-50 transition-colors"
+                    >
+                      + Add
+                    </button>
+                  ) : (
+                    <div className="ml-4 flex items-center gap-2">
+                      <button onClick={() => removePlant(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">−</button>
+                      <span className="text-sm font-medium w-4 text-center">{qtyOf(plant)}</span>
+                      <button onClick={() => addPlant(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">+</button>
+                    </div>
+                  )}
                 </div>
               ))
             )}
@@ -159,33 +176,35 @@ export default function Page() {
 
         {/* Selected plants */}
         <div className="mb-8">
-          <p className="text-lg font-medium mb-3">
+          <p className="text-lg font-medium mb-1">
             Plants you have selected:
             {selected.length > 0 && (
               <span className="ml-2 text-green-700">
-                (${selected.reduce((sum, p) => sum + Number(p.price), 0).toFixed(2)} total)
+                (${selected.reduce((sum, s) => sum + Number(s.plant.price) * s.qty, 0).toFixed(2)} total)
               </span>
             )}
           </p>
+          <p className="text-sm text-gray-400 mb-3">Note: not all selected plants will end up being used in your garden plan.</p>
           {selected.length === 0 ? (
             <p className="text-gray-400 text-sm">No plants selected yet.</p>
           ) : (
             <div className="border-2 border-green-200 rounded-xl overflow-hidden">
-              {selected.map((plant) => (
+              {selected.map(({ plant, qty }) => (
                 <div
                   key={plant.id}
                   className="flex items-center justify-between px-4 py-3 border-b border-green-100 last:border-0"
                 >
                   <div>
                     <span className="font-medium text-green-900">{plant.name}</span>
-                    <span className="ml-2 text-sm text-gray-500">${Number(plant.price).toFixed(2)}</span>
+                    <span className="ml-2 text-sm text-gray-500">
+                      ${Number(plant.price).toFixed(2)} × {qty} = ${(Number(plant.price) * qty).toFixed(2)}
+                    </span>
                   </div>
-                  <button
-                    onClick={() => togglePlant(plant)}
-                    className="ml-4 px-3 py-1 rounded-lg text-sm font-medium border-2 border-red-300 text-red-500 hover:bg-red-50"
-                  >
-                    Remove
-                  </button>
+                  <div className="ml-4 flex items-center gap-2">
+                    <button onClick={() => removePlant(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">−</button>
+                    <span className="text-sm font-medium w-4 text-center">{qty}</span>
+                    <button onClick={() => addPlant(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">+</button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -194,7 +213,7 @@ export default function Page() {
 
         <div className="flex items-center gap-3 mb-6">
           <label className="text-lg font-medium whitespace-nowrap">
-            Upload a photo of your garden:
+            Upload a photo of your garden where you want to plant some plants:
           </label>
           <label className="border-2 border-green-400 rounded-lg px-3 py-2 cursor-pointer text-green-700 font-medium hover:bg-green-50 transition-colors">
             Choose a photo
