@@ -26,6 +26,8 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [selected, setSelected] = useState<{ plant: Plant; qty: number }[]>([]);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams({ page: String(page), search, continent, shade });
@@ -69,23 +71,6 @@ export default function Page() {
           This will help you plan your next gardening endeavour!
         </p>
 
-        <div className="flex items-center gap-3 mb-8">
-          <label className="text-lg font-medium whitespace-nowrap">
-            Enter your budget:
-          </label>
-          <div className="flex items-center border-2 border-green-400 rounded-lg px-3 py-2 focus-within:border-green-600">
-            <span className="text-lg text-green-600 font-medium">$</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              autoComplete="off"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value.replace(/\D/g, ""))}
-              className="text-lg w-28 outline-none ml-1 text-green-900"
-              placeholder="0"
-            />
-          </div>
-        </div>
 
         {/* Plant browser */}
         <div className="mb-10">
@@ -238,15 +223,51 @@ export default function Page() {
 
         <button
           onClick={async () => {
-            const formData = new FormData();
-            formData.append("budget", budget);
-            if (photo) formData.append("photo", photo);
-            await fetch("/api/save", { method: "POST", body: formData });
+            setGenerating(true);
+            setGeneratedImage(null);
+
+            let photoBase64: string | null = null;
+            let photoType: string | null = null;
+            if (photo) {
+              const buffer = await photo.arrayBuffer();
+              photoBase64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+              photoType = photo.type;
+            }
+
+            const res = await fetch("/api/generate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ plants: selected, photo: photoBase64, photoType }),
+            });
+            if (!res.ok) {
+              console.error('Generate failed:', res.status, await res.text());
+              setGenerating(false);
+              return;
+            }
+            const data = await res.json();
+            if (data.image) setGeneratedImage(data.image);
+            setGenerating(false);
           }}
-          className="mt-8 bg-green-700 text-white text-lg font-medium px-6 py-2 rounded-lg hover:bg-green-800 transition-colors"
+          disabled={generating || selected.length === 0}
+          className="mt-8 bg-green-700 text-white text-lg font-medium px-6 py-2 rounded-lg hover:bg-green-800 transition-colors disabled:opacity-50"
         >
-          Submit
+          {generating ? "Generating..." : "Generate Garden Plan"}
         </button>
+
+        {generating && (
+          <p className="mt-4 text-sm text-gray-400">This may take up to 30 seconds...</p>
+        )}
+
+        {generatedImage && (
+          <div className="mt-6">
+            <p className="text-lg font-medium mb-3">Your garden plan:</p>
+            <img
+              src={generatedImage}
+              alt="Generated garden plan"
+              className="w-full rounded-xl border-2 border-green-300 shadow-md"
+            />
+          </div>
+        )}
       </main>
     </>
   );
