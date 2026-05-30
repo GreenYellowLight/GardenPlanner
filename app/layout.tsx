@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { lusitana } from "@/app/ui/fonts"; 
 
+export const metadata: Metadata = {
+  title: "Garden Planner",
+  description: "Plan your next garden"
+}
+
 
 
 // export const metadata: Metadata = {
