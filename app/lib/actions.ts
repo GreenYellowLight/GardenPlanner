@@ -11,7 +11,7 @@ import { join } from 'path'
  * Makes API call to open ai with garden planning information and gets
  *  hopefully an image as a response
  */
-export async function getGardenPlannerImage(plants: string[], imageBase64V1: string): Promise<string | null> {
+export async function getGardenPlannerImage(plants: string[], imageBase64V1: string, filename: any): Promise<string | null> {
 
     const imageBase64 = readFileSync(join(process.cwd(), 'public', 'example-fence-image.webp')).toString('base64')
 
@@ -19,18 +19,23 @@ export async function getGardenPlannerImage(plants: string[], imageBase64V1: str
     const plantNames = plants.join(', ')
 
 
- const prompt = `Add all of the following plants, every single one must be present and clearly visible:  ${plantNames}. Plant them naturally in the optimal vacant spaces in the garden. No plant should be hidden behind existing structures or features. The plants should look healthy and well-established. Keep all existing structures, lawn, and features exactly as they are.`
+    const prompt =  `You are editing a garden photo. Add each of the following plants exactly once, all must be clearly visible and 
+  not obscured: ${plantNames}. Place them in the most natural vacant spots in the garden as though they have just
+  been transplanted from their pots — still small and freshly planted. Do not hide any plant behind fences, walls,
+  or other features. The plants should look healthy with intact leaves and roots settled into the soil. Do not alter
+   any existing structures, lawn, paths, or background features.`
+
 
 
 
     console.log(prompt);
 
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // await new Promise((resolve) => setTimeout(resolve, 3000)); //TODO: remove
 
     const img_url = "https://images.unsplash.com/photo-1682928333176-8f8ac503bc6f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-    return img_url;
+    // return img_url;
 
 
 

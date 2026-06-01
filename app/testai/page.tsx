@@ -24,7 +24,7 @@ export default function Page() {
         // const imageBase64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
 
         setLoading(true);
-        const url = await getGardenPlannerImage(promts, 'imageBase64');
+        const url = 'www' ; //await getGardenPlannerImage(promts, 'imageBase64');
         setResultUrl(url);
         setLoading(false);
     }
