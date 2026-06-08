@@ -41,14 +41,14 @@ export default function Page() {
         </Link>
 
         <p className="text-center text-lg mb-10">
-          This will help you plan your next gardening endeavour!
-        </p>
+          This will help you plan your next gardening endeavour! All plants can be bought from <a href="lotsofplantsvictoria.com" className="text-blue-600 underline hover:text-blue-800">lotsofplantsvictoria.com</a> (if it were a real website) </p>
 
         <PlantBrowser selected={selected} onAdd={addPlant} onRemove={removePlant} />
 
         <SelectedPlants selected={selected} onAdd={addPlant} onRemove={removePlant} />
 
         <GeneratePlan selected={selected} />
+
       </main>
     </>
   );

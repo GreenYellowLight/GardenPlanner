@@ -81,7 +81,10 @@ export default function GeneratePlan({ selected }: Props) {
             onClick={() => window.open(generatedImage, '_blank')}
           />
 
+          <p>Like what you made? <a href="/lotsofplantsvictoria">Buy your selected plants</a>!</p>
+
         </div>
+        
       )}
     </>
   );
