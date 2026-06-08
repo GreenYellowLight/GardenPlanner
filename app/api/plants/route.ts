@@ -30,4 +30,4 @@
 
 
   }
-    // read query params from the URL e.g. /api/plants?s
+    // read query params from the URL e.g. /api/plants?s //TODO

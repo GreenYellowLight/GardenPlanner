@@ -12,21 +12,30 @@ export default function GeneratePlan({ selected }: Props) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleGenerate() {
     setGenerating(true);
+    setError(null);
 
-    const formData = new FormData()
-    formData.append('photo', photo!)
-    const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-    const { url, filename } = await uploadRes.json()
+    try {
+      const formData = new FormData()
+      formData.append('photo', photo!)
+      const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
+      const { url, filename } = await uploadRes.json()
 
-    const plantNames = selected.map(s => s.plant.name)
-    const resultUrl = await getGardenPlannerImage(plantNames, url, filename)
-
-
-    setGeneratedImage(resultUrl);
-    setGenerating(false);
+      const plantNames = selected.map(s => s.plant.name)
+      const resultUrl = await getGardenPlannerImage(plantNames, url, filename)
+      setGeneratedImage(resultUrl);
+    } catch (e: any) {
+      if (e.message === 'TOO_MANY_REQUESTS') {
+        setError('Too many gardens generated recently — please try again in an hour.')
+      } else {
+        setError('Something went wrong. Please try again.')
+      }
+    } finally {
+      setGenerating(false);
+    }
   }
 
   return (
@@ -63,6 +72,10 @@ export default function GeneratePlan({ selected }: Props) {
       >
         {generating ? "Generating..." : "Generate Garden Plan"}
       </button>
+
+      {error && (
+        <p className="mt-4 text-sm text-red-500">{error}</p>
+      )}
 
       {generating && (
         <div className="mt-6 flex flex-col items-center gap-3">

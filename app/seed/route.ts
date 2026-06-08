@@ -7,9 +7,15 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function GET() {
   try {
+    await sql`DROP TABLE IF EXISTS generation_log`;
     await sql`DROP TABLE IF EXISTS plant`;
     await sql`DROP TYPE IF EXISTS shade_requirement`;
     await sql`DROP TYPE IF EXISTS origin_continent`;
+
+    await sql`CREATE TABLE generation_log (
+      id         SERIAL PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`;
 
     await sql`CREATE TYPE shade_requirement AS ENUM ('Full Sun', 'Part Shade', 'Full Shade')`;
     await sql`CREATE TYPE origin_continent AS ENUM ('Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania')`;
