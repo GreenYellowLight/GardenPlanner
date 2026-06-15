@@ -8,11 +8,6 @@ const GENERATION_PERIOD = 60 // over how many minutes from now in the past to ca
 const GENERATION_LIMIT = 3 // how many images can be generated each GENERATION_PERIOD
 
 
-
-export async function getOne(): Promise<number> {
-    return 3000
-}
-
 // Don't allow more that GENERATION_LIMIT requests per GENERATION_PERIOD
 export async function validateCount(): Promise<boolean> {
     await sql`DELETE FROM generation_log WHERE created_at < NOW() - INTERVAL '30 days'` // keep a record incase need to review the past
@@ -22,7 +17,7 @@ export async function validateCount(): Promise<boolean> {
         FROM generation_log
         WHERE created_at > NOW() - (${GENERATION_PERIOD} * INTERVAL '1 minute')`
 
-    return (parseInt(result[0].count) >= GENERATION_LIMIT) ? false : true
+    return  parseInt(result[0].count) <=  GENERATION_LIMIT
 }
 
 
@@ -54,12 +49,7 @@ export async function getGardenPlannerImage(plants: string[], img_url: string): 
             prompt: prompt,
             image_url: img_url
         },
-        logs: true,
-        onQueueUpdate: (update) => {
-            if (update.status === "IN_PROGRESS") {
-                update.logs.map((log) => log.message).forEach(console.log);
-            }
-        },
+        logs: true
     });
 
     return { url: result.data.images?.[0]?.url ?? null }

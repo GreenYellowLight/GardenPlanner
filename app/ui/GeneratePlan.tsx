@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, validateCount } from "../lib/actions";
 
@@ -10,9 +10,19 @@ type Props = {
 
 export default function GeneratePlan({ selected }: Props) {
   const [photo, setPhoto] = useState<File | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!photo) return
+    const url = URL.createObjectURL(photo)
+    setPhotoUrl(url)
+    return () => URL.revokeObjectURL(url)  
+  }, [photo]) 
+
+
 
   async function handleGenerate() {
     setGenerating(true);
@@ -28,9 +38,9 @@ export default function GeneratePlan({ selected }: Props) {
       const formData = new FormData()
       formData.append('photo', photo!)
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-      const { url, filename } = await uploadRes.json() 
+      const { url, filename } = await uploadRes.json()
 
-      
+
 
       const plantNames = selected.map(s => s.plant.name)
       const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, url)
@@ -66,7 +76,7 @@ export default function GeneratePlan({ selected }: Props) {
       {photo && (
         <div className="mt-4">
           <img
-            src={URL.createObjectURL(photo)}
+            src={photoUrl}
             alt="preview"
             className="w-64 rounded-xl border-2 border-green-300 shadow-md"
           />
@@ -105,7 +115,7 @@ export default function GeneratePlan({ selected }: Props) {
           <p>Like what you made? <a href="/lotsofplantsvictoria">Buy your selected plants</a>!</p>
 
         </div>
-        
+
       )}
     </>
   );
