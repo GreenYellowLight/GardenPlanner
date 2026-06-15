@@ -1,16 +1,16 @@
 "use client";
 
-import Link from "next/link";
+
 import { useState } from "react";
 import PlantBrowser from "@/app/ui/PlantBrowser";
 import SelectedPlants from "@/app/ui/SelectedPlants";
 import GeneratePlan from "@/app/ui/GeneratePlan";
 import type { Plant } from "@/app/lib/types";
 
-
 export default function Page() {
   const [selected, setSelected] = useState<{ plant: Plant; qty: number }[]>([]);
 
+  
   function addPlant(plant: Plant) {
     setSelected((prev) => {
       const existing = prev.find((s) => s.plant.id === plant.id);
@@ -36,10 +36,6 @@ export default function Page() {
 
       <main className="max-w-2xl mx-auto px-6 py-10">
 
-        <Link href="testai">
-          <p className="text-red-400 underline">Go to test page</p>
-        </Link>
-
         <p className="text-center text-lg mb-10">
           This will help you plan your next gardening endeavour! All plants can be bought from <a href="lotsofplantsvictoria.com" className="text-blue-600 underline hover:text-blue-800">lotsofplantsvictoria.com</a> (if it were a real website) </p>
 
@@ -48,6 +44,7 @@ export default function Page() {
         <SelectedPlants selected={selected} onAdd={addPlant} onRemove={removePlant} />
 
         <GeneratePlan selected={selected} />
+
 
       </main>
     </>

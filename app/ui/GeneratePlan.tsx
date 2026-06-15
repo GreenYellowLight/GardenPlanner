@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Plant } from "@/app/lib/types";
-import { getGardenPlannerImage } from "../lib/actions";
+import { getGardenPlannerImage, validateCount } from "../lib/actions";
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -19,20 +19,28 @@ export default function GeneratePlan({ selected }: Props) {
     setError(null);
 
     try {
+      const allowed = await validateCount()
+      if (!allowed) {
+        setError('Too many gardens generated recently — please try again in an hour.')
+        return
+      }
+
       const formData = new FormData()
       formData.append('photo', photo!)
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-      const { url, filename } = await uploadRes.json()
+      const { url, filename } = await uploadRes.json() 
+
+      
 
       const plantNames = selected.map(s => s.plant.name)
-      const resultUrl = await getGardenPlannerImage(plantNames, url, filename)
-      setGeneratedImage(resultUrl);
-    } catch (e: any) {
-      if (e.message === 'TOO_MANY_REQUESTS') {
+      const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, url)
+      if (actionError === 'TOO_MANY_REQUESTS') {
         setError('Too many gardens generated recently — please try again in an hour.')
       } else {
-        setError('Something went wrong. Please try again.')
+        setGeneratedImage(resultUrl)
       }
+    } catch (e: any) {
+      setError('Something went wrong. Please try again.')
     } finally {
       setGenerating(false);
     }
@@ -67,7 +75,7 @@ export default function GeneratePlan({ selected }: Props) {
 
       <button
         onClick={handleGenerate}
-        disabled={generating || !photo || selected.length === 0}
+        disabled={generating || !photo || selected.length === 0 || !!generatedImage}
         className="mt-8 bg-green-700 text-white text-lg font-medium px-6 py-2 rounded-lg hover:bg-green-800 transition-colors disabled:opacity-50"
       >
         {generating ? "Generating..." : "Generate Garden Plan"}
