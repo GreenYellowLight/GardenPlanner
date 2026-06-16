@@ -16,10 +16,10 @@
     
     const searchFilter = search ? sql`AND name ILIKE ${'%' + search + '%'}` : sql``;
     const continentFilter = continent ? sql`AND origin_continent::text = ${continent}` : sql``;
-    
+    const shadeFilter = shade ? sql`AND shade_requirement::text = ${shade}` : sql``;
 
-    const rows =  await sql`SELECT *, COUNT(*) OVER() as TOTAL FROM Plant WHERE TRUE ${searchFilter} 
-    ${continentFilter} ORDER BY name LIMIT 10 OFFSET ${pageOffset}`; 
+    const rows = await sql`SELECT *, COUNT(*) OVER() as TOTAL FROM Plant WHERE TRUE ${searchFilter}
+    ${continentFilter} ${shadeFilter} ORDER BY name LIMIT ${pageLength} OFFSET ${pageOffset}`;
 
     const total = rows.length > 0 ? parseInt(rows[0].total) : 0
 
@@ -30,4 +30,3 @@
 
 
   }
-    // read query params from the URL e.g. /api/plants?s //TODO
