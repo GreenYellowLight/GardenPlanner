@@ -17,7 +17,7 @@ export async function validateCount(): Promise<boolean> {
         FROM generation_log
         WHERE created_at > NOW() - (${GENERATION_PERIOD} * INTERVAL '1 minute')`
 
-    return  parseInt(result[0].count) <=  GENERATION_LIMIT
+    return  parseInt(result[0].count) <  GENERATION_LIMIT
 }
 
 
