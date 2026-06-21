@@ -84,7 +84,7 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
                 <img
                   src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`}
                   alt={plant.name}
-                  className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                  className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
                   onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
                 />
                 <div>
