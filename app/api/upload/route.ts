@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import type { NextRequest } from 'next/server'
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
 
-const max_MB_size = 10;
+const max_MB_size = 30;
 const MAX_SIZE = max_MB_size * 1024 * 1024 // 10MB in bytes
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 

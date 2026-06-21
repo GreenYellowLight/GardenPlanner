@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Plant } from "@/app/lib/types";
-import { getGardenPlannerImage, validateCount } from "../lib/actions";
+import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -12,7 +12,9 @@ export default function GeneratePlan({ selected }: Props) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined)
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [futureImage, setFutureImage] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [generatingFuture, setGeneratingFuture] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,6 +50,14 @@ export default function GeneratePlan({ selected }: Props) {
         setError('Too many gardens generated recently — please try again in an hour.')
       } else {
         setGeneratedImage(resultUrl)
+        setGenerating(false)
+        setGeneratingFuture(true)
+        try {
+          const { url: futureUrl } = await getGardenFutureImage(resultUrl!, plantNames)
+          setFutureImage(futureUrl)
+        } finally {
+          setGeneratingFuture(false)
+        }
       }
     } catch (e: any) {
       setError('Something went wrong. Please try again.')
@@ -112,10 +122,25 @@ export default function GeneratePlan({ selected }: Props) {
             onClick={() => window.open(generatedImage, '_blank')}
           />
 
-          <p>Like what you made? <a href="/lotsofplantsvictoria">Buy your selected plants</a>!</p>
+          <div className="mt-6">
+            <p className="text-lg font-medium mb-3">5 years later:</p>
+            {generatingFuture ? (
+              <div className="flex flex-col items-center gap-3 py-10 border-2 border-green-200 rounded-xl">
+                <div className="w-12 h-12 border-4 border-green-300 border-t-green-600 rounded-full animate-spin" />
+                <p className="text-sm text-gray-400">Generating your garden in 5 years...</p>
+              </div>
+            ) : futureImage ? (
+              <img
+                src={futureImage}
+                alt="Garden in 5 years"
+                className="w-full rounded-xl border-2 border-green-300 shadow-md cursor-zoom-in"
+                onClick={() => window.open(futureImage, '_blank')}
+              />
+            ) : null}
+          </div>
 
+          <p className="mt-6">Like what you made? <a href="/lotsofplantsvictoria">Buy your selected plants</a>!</p>
         </div>
-
       )}
     </>
   );
