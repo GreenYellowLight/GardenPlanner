@@ -82,4 +82,3 @@ export async function getGardenPlannerImage(plants: string[], img_url: string): 
 
 
 }
-

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
+import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from "../lib/constants";
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -40,7 +41,12 @@ export default function GeneratePlan({ selected }: Props) {
       const formData = new FormData()
       formData.append('photo', photo!)
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-      const { url, filename } = await uploadRes.json()
+      const uploadData = await uploadRes.json()
+      if (!uploadRes.ok) {
+        setError(uploadData.error ?? 'Failed to upload photo.')
+        return
+      }
+      const { url } = uploadData
 
 
 
@@ -78,7 +84,16 @@ export default function GeneratePlan({ selected }: Props) {
             className="hidden"
             type="file"
             accept="image/*"
-            onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+            onChange={(e) => {
+              const file = e.target.files?.[0] ?? null
+              if (file && file.size > MAX_PHOTO_BYTES) {
+                setError(`Photo is too large (max ${MAX_PHOTO_MB}MB).`)
+                setPhoto(null)
+              } else {
+                setError(null)
+                setPhoto(file)
+              }
+            }}
           />
         </label>
       </div>

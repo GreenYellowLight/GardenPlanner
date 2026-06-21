@@ -1,9 +1,7 @@
 import { randomUUID } from 'crypto'
 import type { NextRequest } from 'next/server'
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
-
-const max_MB_size = 30;
-const MAX_SIZE = max_MB_size * 1024 * 1024 // 10MB in bytes
+import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from '@/app/lib/constants'
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 const s3 = new S3Client({ region: process.env.AWS_REGION })
@@ -16,8 +14,8 @@ export async function POST(request: NextRequest) {
         return Response.json({ error: 'No file' }, { status: 400 })
     if (!ALLOWED_TYPES.includes(file.type))
         return Response.json({ error: 'Invalid type' }, { status: 400 })
-    if (file.size > MAX_SIZE)
-        return Response.json({ error: `Too large (max ${max_MB_size}MB)` }, { status: 400 })
+    if (file.size > MAX_PHOTO_BYTES)
+        return Response.json({ error: `Too large (max ${MAX_PHOTO_MB}MB)` }, { status: 400 })
 
     try {
         // delete everything in generated-images/ before uploading. Am assuming it will be one user at a time + rarely used
