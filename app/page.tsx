@@ -17,7 +17,7 @@ export default function Page() {
       <main className="max-w-2xl mx-auto px-6 py-10">
 
         <p className="text-center text-lg mb-10">
-          This will help you plan your next gardening endeavour! All plants can be bought from <a href="lotsofplantsvictoria.com" className="text-blue-600 underline hover:text-blue-800">lotsofplantsvictoria.com</a> (if it were a real website)
+          This will help you plan your next gardening endeavour! All plants can be bought from <a href="lotsofplantsvictoria" className="text-blue-600 underline hover:text-blue-800">lotsofplantsvictoria.com</a> (if it were a real website)
         </p>
 
         <PlantBrowser selected={selected} onAdd={addPlant} onRemove={removePlant} />

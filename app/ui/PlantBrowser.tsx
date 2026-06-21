@@ -26,13 +26,17 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
     fetch(`/api/plants?${params}`)
       .then((r) => r.json())
       .then((data) => {
-        setPlants(data.plants ?? []);
-        setPages(data.pages ?? 1);
-      });
+        setPlants(data.plants ?? [])
+        setPages(data.pages ?? 1)
+      })
+      .catch(() => {
+        setPlants([])
+        setPages(1)
+      })
   }, [page, search, continent, shade]);
 
   function qtyOf(plant: Plant) {
-    return selected.find((s) => s.plant.id === plant.id)?.qty ?? 0;
+    return selected.find((s) => s.plant.id === plant.id)?.qty ?? 0
   }
 
   return (
@@ -43,13 +47,13 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
         <input
           type="text"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
           placeholder="Search plants..."
           className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500 flex-1 min-w-32"
         />
         <select
           value={continent}
-          onChange={(e) => { setContinent(e.target.value); setPage(1); }}
+          onChange={(e) => { setContinent(e.target.value); setPage(1) }}
           className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500"
         >
           <option value="">All continents</option>
@@ -57,7 +61,7 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
         </select>
         <select
           value={shade}
-          onChange={(e) => { setShade(e.target.value); setPage(1); }}
+          onChange={(e) => { setShade(e.target.value); setPage(1) }}
           className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500"
         >
           <option value="">All shade types</option>
@@ -76,11 +80,19 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
                 qtyOf(plant) > 0 ? "bg-green-50" : "hover:bg-gray-50"
               }`}
             >
-              <div>
-                <span className="font-medium text-green-900">{plant.name}</span>
-                <span className="ml-2 text-sm text-gray-500">
-                  {plant.origin_continent} · {plant.shade_requirement} · ${Number(plant.price).toFixed(2)}
-                </span>
+              <div className="flex items-center gap-3">
+                <img
+                  src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`}
+                  alt={plant.name}
+                  className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
+                />
+                <div>
+                  <span className="font-medium text-green-900">{plant.name}</span>
+                  <span className="ml-2 text-sm text-gray-500">
+                    {plant.origin_continent} · {plant.shade_requirement} · ${Number(plant.price).toFixed(2)}
+                  </span>
+                </div>
               </div>
               {qtyOf(plant) === 0 ? (
                 <button
