@@ -12,7 +12,10 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
-        <span className="bg-green-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Step 2</span>
+        <svg width="58" height="26" viewBox="0 0 58 26" className="flex-shrink-0">
+          <rect width="58" height="26" rx="13" fill="#15803d" />
+          <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 2</text>
+        </svg>
         <h2 className="text-xl font-semibold text-green-900">Your selection</h2>
         {selected.length > 0 && (
           <span className="ml-auto text-sm font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full">

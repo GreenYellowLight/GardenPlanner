@@ -44,7 +44,10 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
-        <span className="bg-green-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Step 1</span>
+        <svg width="58" height="26" viewBox="0 0 58 26" className="flex-shrink-0">
+          <rect width="58" height="26" rx="13" fill="#15803d" />
+          <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 1</text>
+        </svg>
         <h2 className="text-xl font-semibold text-green-900">Choose your plants</h2>
       </div>
       <p className="text-sm text-stone-500 mb-5">

@@ -70,10 +70,19 @@ export default function GeneratePlan({ selected }: Props) {
 
   const canGenerate = !generating && !!photo && selected.length > 0 && !generatedImage
 
+  const generatingHint =
+    !photo && selected.length === 0 ? 'Add some plants and a photo before generating.' :
+    !photo                          ? 'Add a photo before generating.' :
+    selected.length === 0           ? 'Add some plants before generating.' :
+    null
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
-        <span className="bg-green-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Step 3</span>
+        <svg width="58" height="26" viewBox="0 0 58 26" className="flex-shrink-0">
+          <rect width="58" height="26" rx="13" fill="#15803d" />
+          <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 3</text>
+        </svg>
         <h2 className="text-xl font-semibold text-green-900">Generate your garden plan</h2>
       </div>
       <p className="text-sm text-stone-500 mb-6">
@@ -125,9 +134,7 @@ export default function GeneratePlan({ selected }: Props) {
         </div>
       )}
 
-      {selected.length === 0 && (
-        <p className="mt-4 text-sm text-stone-400">Add some plants in Step 1 before generating.</p>
-      )}
+      {generatingHint && <p className="mt-4 text-sm text-red-500">{generatingHint}</p>}
 
       <button
         onClick={handleGenerate}
