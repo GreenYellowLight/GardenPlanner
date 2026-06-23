@@ -22,10 +22,8 @@ export default function GeneratePlan({ selected }: Props) {
     if (!photo) return
     const url = URL.createObjectURL(photo)
     setPhotoUrl(url)
-    return () => URL.revokeObjectURL(url)  
-  }, [photo]) 
-
-
+    return () => URL.revokeObjectURL(url)
+  }, [photo])
 
   async function handleGenerate() {
     setGenerating(true);
@@ -47,8 +45,6 @@ export default function GeneratePlan({ selected }: Props) {
         return
       }
       const { url } = uploadData
-
-
 
       const plantNames = selected.map(s => s.plant.name)
       const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, url)
@@ -72,91 +68,125 @@ export default function GeneratePlan({ selected }: Props) {
     }
   }
 
-  return (
-    <>
-      <div className="flex items-center gap-3 mb-6">
-        <label className="text-lg font-medium whitespace-nowrap">
-          Upload a photo of your garden where you want to plant some plants:
-        </label>
-        <label className="border-2 border-green-400 rounded-lg px-3 py-2 cursor-pointer text-green-700 font-medium hover:bg-green-50 transition-colors">
-          Choose a photo
-          <input
-            className="hidden"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0] ?? null
-              if (file && file.size > MAX_PHOTO_BYTES) {
-                setError(`Photo is too large (max ${MAX_PHOTO_MB}MB).`)
-                setPhoto(null)
-              } else {
-                setError(null)
-                setPhoto(file)
-              }
-            }}
-          />
-        </label>
-      </div>
+  const canGenerate = !generating && !!photo && selected.length > 0 && !generatedImage
 
-      {photo && (
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-1">
+        <span className="bg-green-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Step 3</span>
+        <h2 className="text-xl font-semibold text-green-900">Generate your garden plan</h2>
+      </div>
+      <p className="text-sm text-stone-500 mb-6">
+        Upload a photo of the space you want to plant in, then let AI show you what it will look like.
+      </p>
+
+      <label className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+        photo ? 'border-green-400 bg-green-50' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'
+      }`}>
+        {photo ? (
+          <p className="text-green-700 font-medium">{photo.name} — click to change</p>
+        ) : (
+          <>
+            <p className="text-stone-600 font-medium">Click to upload a photo of your garden</p>
+            <p className="text-xs text-stone-400 mt-1">JPEG, PNG or WebP · max {MAX_PHOTO_MB}MB</p>
+          </>
+        )}
+        <input
+          className="hidden"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0] ?? null
+            if (file && file.size > MAX_PHOTO_BYTES) {
+              setError(`Photo is too large (max ${MAX_PHOTO_MB}MB).`)
+              setPhoto(null)
+            } else {
+              setError(null)
+              setPhoto(file)
+            }
+          }}
+        />
+      </label>
+
+      {photo && photoUrl && (
         <div className="mt-4">
+          <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">Preview</p>
           <img
             src={photoUrl}
             alt="preview"
-            className="w-64 rounded-xl border-2 border-green-300 shadow-md"
+            className="w-full max-h-72 object-cover rounded-xl border border-stone-200 shadow-sm"
           />
         </div>
+      )}
+
+      {error && (
+        <div className="mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {selected.length === 0 && (
+        <p className="mt-4 text-sm text-stone-400">Add some plants in Step 1 before generating.</p>
       )}
 
       <button
         onClick={handleGenerate}
-        disabled={generating || !photo || selected.length === 0 || !!generatedImage}
-        className="mt-8 bg-green-700 text-white text-lg font-medium px-6 py-2 rounded-lg hover:bg-green-800 transition-colors disabled:opacity-50"
+        disabled={!canGenerate}
+        className="mt-6 w-full py-3 rounded-xl text-base font-semibold bg-green-700 text-white hover:bg-green-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
       >
-        {generating ? "Generating..." : "Generate Garden Plan"}
+        {generating ? "Generating your garden..." : "Generate Garden Plan"}
       </button>
 
-      {error && (
-        <p className="mt-4 text-sm text-red-500">{error}</p>
-      )}
-
       {generating && (
-        <div className="mt-6 flex flex-col items-center gap-3">
-          <div className="w-12 h-12 border-4 border-green-300 border-t-green-600 rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">This may take up to 30 seconds...</p>
+        <div className="mt-6 flex flex-col items-center gap-3 py-6">
+          <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
+          <p className="text-sm text-stone-400">This may take up to 30 seconds...</p>
         </div>
       )}
 
       {generatedImage && (
-        <div className="mt-6">
-          <p className="text-lg font-medium mb-3">Your garden plan:</p>
-          <img
-            src={generatedImage}
-            alt="Generated garden plan"
-            className="w-full rounded-xl border-2 border-green-300 shadow-md cursor-zoom-in"
-            onClick={() => window.open(generatedImage, '_blank')}
-          />
+        <div className="mt-8 flex flex-col gap-6">
+          <div>
+            <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">Your garden — freshly planted</p>
+            <img
+              src={generatedImage}
+              alt="Generated garden plan"
+              className="w-full rounded-xl border border-stone-200 shadow-md cursor-zoom-in"
+              onClick={() => window.open(generatedImage, '_blank')}
+            />
+          </div>
 
-          <div className="mt-6">
-            <p className="text-lg font-medium mb-3">5 years later:</p>
+          <div>
+            <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">5 years from now</p>
             {generatingFuture ? (
-              <div className="flex flex-col items-center gap-3 py-10 border-2 border-green-200 rounded-xl">
-                <div className="w-12 h-12 border-4 border-green-300 border-t-green-600 rounded-full animate-spin" />
-                <p className="text-sm text-gray-400">Generating your garden in 5 years...</p>
+              <div className="flex flex-col items-center gap-3 py-12 border border-dashed border-stone-300 rounded-xl">
+                <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
+                <p className="text-sm text-stone-400">Generating your garden in 5 years...</p>
               </div>
             ) : futureImage ? (
               <img
                 src={futureImage}
                 alt="Garden in 5 years"
-                className="w-full rounded-xl border-2 border-green-300 shadow-md cursor-zoom-in"
+                className="w-full rounded-xl border border-stone-200 shadow-md cursor-zoom-in"
                 onClick={() => window.open(futureImage, '_blank')}
               />
             ) : null}
           </div>
 
-          <p className="mt-6">Like what you made? <a href="/lotsofplantsvictoria">Buy your selected plants</a>!</p>
+          <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
+            <p className="font-semibold text-green-900 mb-1">Ready to bring your garden to life?</p>
+            <p className="text-sm text-green-700 mb-4">
+              All {selected.length} plant{selected.length !== 1 ? 's' : ''} in your plan are available to order from Lots of Plants Victoria — online or in-store.
+            </p>
+            <a
+              href="#"
+              className="inline-block bg-green-700 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-green-800 transition-colors text-sm shadow-sm"
+            >
+              Order your plants
+            </a>
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

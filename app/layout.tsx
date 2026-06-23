@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
      <html lang="en" className="h-full antialiased">
 
-       <body className={`${lusitana.className} min-h-full flex flex-col`}>{children}</body>
+       <body className={`${lusitana.className} min-h-full flex flex-col bg-stone-50`}>{children}</body>
 
     </html>
   );

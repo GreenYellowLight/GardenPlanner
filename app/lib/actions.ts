@@ -17,48 +17,27 @@ export async function validateCount(): Promise<boolean> {
         FROM generation_log
         WHERE created_at > NOW() - (${GENERATION_PERIOD} * INTERVAL '1 minute')`
 
-    return  parseInt(result[0].count) <  GENERATION_LIMIT
+    return parseInt(result[0].count) < GENERATION_LIMIT
 }
 
 
-export async function getGardenFutureImage(firstImageUrl: string, plants: string[]): Promise<{ url: string | null, error?: string }> {
-    const plantNames = plants.join(', ')
 
-    const prompt = `This is a garden that was planted with ${plantNames}. Generate what this exact garden looks
-   like 5 years later. All plants should be visibly larger and fully mature — with
-  significantly more foliage, spread, and height than when first planted. Each plant must
-  still be clearly identifiable and in the same position. The lawn and grass must remain
-  neatly mowed and well-maintained. All existing structures, paths, fences, walls, and
-  background features must remain completely unchanged. Do not add any new plants,
-  decorations, or objects. Do not remove anything that was there originally.`
+    /**
+     * Makes API call to open ai with garden planning information and gets
+     *  hopefully an image as a response
+     */
+    export async function getGardenPlannerImage(plants: string[], img_url: string): Promise<{ url: string | null, error?: string }> {
 
-    const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
-        input: {
-            prompt,
-            image_url: firstImageUrl
-        },
-        logs: true
-    });
+        const allowed = await validateCount()
+        if (!allowed) return { url: null, error: 'TOO_MANY_REQUESTS' }
 
-    return { url: result.data.images?.[0]?.url ?? null }
-}
-
-/**
- * Makes API call to open ai with garden planning information and gets
- *  hopefully an image as a response
- */
-export async function getGardenPlannerImage(plants: string[], img_url: string): Promise<{ url: string | null, error?: string }> {
-
-    const allowed = await validateCount()
-    if (!allowed) return { url: null, error: 'TOO_MANY_REQUESTS' }
-
-     await sql`INSERT INTO generation_log DEFAULT VALUES`
+        await sql`INSERT INTO generation_log DEFAULT VALUES`
 
 
-    const plantNames = plants.join(', ')
+        const plantNames = plants.join(', ')
 
 
-    const prompt = `You are editing a garden photo. Add each of the following plants exactly once, all must be clearly visible and 
+        const prompt = `You are editing a garden photo. Add each of the following plants exactly once, all must be clearly visible and 
   not obscured: ${plantNames}. Place them in the most natural vacant spots in the garden as though they have just
   been transplanted from their pots — still small and freshly planted. Do not hide any plant behind fences, walls,
   or other features. The plants should look healthy with intact leaves and roots settled into the soil. Do not alter
@@ -66,19 +45,38 @@ export async function getGardenPlannerImage(plants: string[], img_url: string): 
 
 
 
-    const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
-        input: {
-            prompt: prompt,
-            image_url: img_url
-        },
-        logs: true
-    });
+        const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
+            input: {
+                prompt: prompt,
+                image_url: img_url
+            },
+            logs: true
+        });
 
-    return { url: result.data.images?.[0]?.url ?? null }
-
-
+        return { url: result.data.images?.[0]?.url ?? null }
 
 
 
 
-}
+    }
+    export async function getGardenFutureImage(firstImageUrl: string, plants: string[]): Promise<{ url: string | null, error?: string }> {
+        const plantNames = plants.join(', ')
+
+        const prompt = `Generate what this exact garden looks like 5 years later. All plants should be visibly larger and fully mature — with
+  significantly more foliage, spread, and height than when first planted. Each plant must
+  still be clearly identifiable and in the same position. The lawn and grass must remain
+  neatly mowed and well-maintained. All existing structures, paths, fences, walls, and
+  background features must remain completely unchanged. Do not add any new plants,
+  decorations, or objects. Do not remove anything that was there originally.`
+
+        const result = await fal.subscribe("fal-ai/flux-pro/kontext", {
+            input: {
+                prompt,
+                image_url: firstImageUrl
+            },
+            logs: true
+        });
+
+        return { url: result.data.images?.[0]?.url ?? null }
+    }
+

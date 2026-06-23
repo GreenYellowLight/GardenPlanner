@@ -1,0 +1,13 @@
+button not centered, 
+header npoot centersd, 
+header colour should be a cooelr green
+
+make Your garden — freshly planted higher contrast
+
+
+add a link when clicking on 2
+Upload a photo
+
+Take a photo of the space you want to plant in — a garden bed, a corner of your yard, or a balcony — and upload it here
+
+make it scroll down autiomatically after pressing genreate.

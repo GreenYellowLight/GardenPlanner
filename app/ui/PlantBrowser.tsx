@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import type { Plant } from '@/app/lib/types';
 
-
 const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
 const SHADE_TYPES = ["Full Sun", "Part Shade", "Full Shade"];
 
@@ -35,26 +34,35 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
       })
   }, [page, search, continent, shade]);
 
+
   function qtyOf(plant: Plant) {
     return selected.find((s) => s.plant.id === plant.id)?.qty ?? 0
   }
 
-  return (
-    <div className="mb-10">
-      <p className="text-lg font-medium mb-3">Select plants you want:</p>
+  const filterClass = "border border-stone-300 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
 
-      <div className="flex flex-wrap gap-2 mb-4">
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-1">
+        <span className="bg-green-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Step 1</span>
+        <h2 className="text-xl font-semibold text-green-900">Choose your plants</h2>
+      </div>
+      <p className="text-sm text-stone-500 mb-5">
+        Browse plants and add the ones you want in your garden. Filter by continent or shade requirements.
+      </p>
+
+      <div className="flex flex-wrap gap-2 mb-4 p-3 bg-stone-50 rounded-xl border border-stone-200">
         <input
           type="text"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1) }}
           placeholder="Search plants..."
-          className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500 flex-1 min-w-32"
+          className={`${filterClass} flex-1 min-w-32`}
         />
         <select
           value={continent}
           onChange={(e) => { setContinent(e.target.value); setPage(1) }}
-          className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500"
+          className={filterClass}
         >
           <option value="">All continents</option>
           {CONTINENTS.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -62,50 +70,50 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
         <select
           value={shade}
           onChange={(e) => { setShade(e.target.value); setPage(1) }}
-          className="border-2 border-green-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-green-500"
+          className={filterClass}
         >
           <option value="">All shade types</option>
           {SHADE_TYPES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
 
-      <div className="border-2 border-green-200 rounded-xl overflow-hidden">
+      <div className="border border-stone-200 rounded-xl overflow-hidden divide-y divide-stone-100">
         {plants.length === 0 ? (
-          <p className="text-center text-gray-400 py-8">No plants found</p>
+          <p className="text-center text-stone-400 py-10">No plants found</p>
         ) : (
           plants.map((plant) => (
             <div
               key={plant.id}
-              className={`flex items-center justify-between px-4 py-3 border-b border-green-100 last:border-0 ${
-                qtyOf(plant) > 0 ? "bg-green-50" : "hover:bg-gray-50"
+              className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                qtyOf(plant) > 0 ? "bg-green-50" : "hover:bg-stone-50"
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <img
                   src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`}
                   alt={plant.name}
-                  className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
+                  className="w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-sm"
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/64x64/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
                 />
                 <div>
-                  <span className="font-medium text-green-900">{plant.name}</span>
-                  <span className="ml-2 text-sm text-gray-500">
-                    {plant.origin_continent} · {plant.shade_requirement} · ${Number(plant.price).toFixed(2)}
-                  </span>
+                  <p className="font-semibold text-green-900">{plant.name}</p>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    {plant.origin_continent} · {plant.shade_requirement}
+                  </p>
                 </div>
               </div>
               {qtyOf(plant) === 0 ? (
                 <button
                   onClick={() => onAdd(plant)}
-                  className="ml-4 px-3 py-1 rounded-lg text-sm font-medium border-2 border-green-400 text-green-700 hover:bg-green-50 transition-colors"
+                  className="ml-4 px-4 py-1.5 rounded-lg text-sm font-semibold bg-green-700 text-white hover:bg-green-800 transition-colors"
                 >
                   + Add
                 </button>
               ) : (
                 <div className="ml-4 flex items-center gap-2">
-                  <button onClick={() => onRemove(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">−</button>
-                  <span className="text-sm font-medium w-4 text-center">{qtyOf(plant)}</span>
-                  <button onClick={() => onAdd(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">+</button>
+                  <button onClick={() => onRemove(plant)} className="w-8 h-8 rounded-lg border border-stone-300 text-stone-600 font-bold hover:bg-stone-100 transition-colors">−</button>
+                  <span className="text-sm font-semibold w-5 text-center">{qtyOf(plant)}</span>
+                  <button onClick={() => onAdd(plant)} className="w-8 h-8 rounded-lg bg-green-700 text-white font-bold hover:bg-green-800 transition-colors">+</button>
                 </div>
               )}
             </div>
@@ -114,19 +122,19 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
       </div>
 
       {pages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-4">
+        <div className="flex items-center justify-center gap-3 mt-4">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1 rounded-lg border-2 border-green-300 text-green-700 text-sm disabled:opacity-40 hover:bg-green-50"
+            className="px-4 py-1.5 rounded-lg border border-stone-300 text-stone-600 text-sm disabled:opacity-40 hover:bg-stone-100 transition-colors"
           >
             ← Prev
           </button>
-          <span className="text-sm text-gray-500">Page {page} of {pages}</span>
+          <span className="text-sm text-stone-400">Page {page} of {pages}</span>
           <button
             onClick={() => setPage((p) => Math.min(pages, p + 1))}
             disabled={page === pages}
-            className="px-3 py-1 rounded-lg border-2 border-green-300 text-green-700 text-sm disabled:opacity-40 hover:bg-green-50"
+            className="px-4 py-1.5 rounded-lg border border-stone-300 text-stone-600 text-sm disabled:opacity-40 hover:bg-stone-100 transition-colors"
           >
             Next →
           </button>

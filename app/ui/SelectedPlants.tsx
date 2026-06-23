@@ -9,43 +9,48 @@ type Props = {
 };
 
 export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
-  const total = selected.reduce((sum, s) => sum + Number(s.plant.price) * s.qty, 0);
-
   return (
-    <div className="mb-8">
-      <p className="text-lg font-medium mb-1">
-        Plants you have selected:
+    <div>
+      <div className="flex items-center gap-3 mb-1">
+        <span className="bg-green-700 text-white text-xs font-bold px-2.5 py-1 rounded-full">Step 2</span>
+        <h2 className="text-xl font-semibold text-green-900">Your selection</h2>
         {selected.length > 0 && (
-          <span className="ml-2 text-green-700">(${total.toFixed(2)} total)</span>
+          <span className="ml-auto text-sm font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full">
+            {selected.reduce((sum, s) => sum + s.qty, 0)} plant{selected.reduce((sum, s) => sum + s.qty, 0) !== 1 ? 's' : ''}
+          </span>
         )}
+      </div>
+      <p className="text-sm text-stone-500 mb-5">
+        Plants you've added to your garden plan.
       </p>
+
       {selected.length === 0 ? (
-        <p className="text-gray-400 text-sm">No plants selected yet.</p>
+        <div className="text-center py-10 border border-dashed border-stone-300 rounded-xl">
+          <p className="text-stone-400">No plants selected yet — add some above.</p>
+        </div>
       ) : (
-        <div className="border-2 border-green-200 rounded-xl overflow-hidden">
+        <div className="border border-stone-200 rounded-xl overflow-hidden divide-y divide-stone-100">
           {selected.map(({ plant, qty }) => (
             <div
               key={plant.id}
-              className="flex items-center justify-between px-4 py-3 border-b border-green-100 last:border-0"
+              className="flex items-center justify-between px-4 py-3 hover:bg-stone-50 transition-colors"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <img
                   src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`}
                   alt={plant.name}
-                  className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/40x40/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
+                  className="w-12 h-12 rounded-xl object-cover flex-shrink-0 shadow-sm"
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/48x48/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
                 />
                 <div>
-                  <span className="font-medium text-green-900">{plant.name}</span>
-                  <span className="ml-2 text-sm text-gray-500">
-                    ${Number(plant.price).toFixed(2)} x {qty} = ${(Number(plant.price) * qty).toFixed(2)}
-                  </span>
+                  <p className="font-semibold text-green-900">{plant.name}</p>
+                  <p className="text-sm text-stone-400">{plant.origin_continent} · {plant.shade_requirement}</p>
                 </div>
               </div>
               <div className="ml-4 flex items-center gap-2">
-                <button onClick={() => onRemove(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">−</button>
-                <span className="text-sm font-medium w-4 text-center">{qty}</span>
-                <button onClick={() => onAdd(plant)} className="w-7 h-7 rounded-lg border-2 border-green-400 text-green-700 font-bold hover:bg-green-50">+</button>
+                <button onClick={() => onRemove(plant)} className="w-8 h-8 rounded-lg border border-stone-300 text-stone-600 font-bold hover:bg-stone-100 transition-colors">−</button>
+                <span className="text-sm font-semibold w-5 text-center">{qty}</span>
+                <button onClick={() => onAdd(plant)} className="w-8 h-8 rounded-lg bg-green-700 text-white font-bold hover:bg-green-800 transition-colors">+</button>
               </div>
             </div>
           ))}
