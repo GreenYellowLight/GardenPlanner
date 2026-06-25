@@ -87,9 +87,8 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
           plants.map((plant) => (
             <div
               key={plant.id}
-              className={`flex items-center justify-between px-4 py-3 transition-colors ${
-                qtyOf(plant) > 0 ? "bg-green-50" : "hover:bg-stone-50"
-              }`}
+              className={`flex items-center justify-between px-4 py-3 transition-colors ${qtyOf(plant) > 0 ? "bg-green-50" : "hover:bg-stone-50"
+                }`}
             >
               <div className="flex items-center gap-4">
                 <img
