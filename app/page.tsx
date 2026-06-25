@@ -23,11 +23,9 @@ export default function Page() {
 
         <MainPanel><HowItWorks/> </MainPanel>
         <DemoExample />
-        <MainPanel><PlantBrowser selected={selected} onAdd={addPlant} onRemove={removePlant} /> </MainPanel>
-        <MainPanel><SelectedPlants selected={selected} onAdd={addPlant} onRemove={removePlant} /> </MainPanel>
-        <MainPanel> <GeneratePlan selected={selected} /></MainPanel>
-
-{/* TODO: add the steps 123 links to the div back */}
+        <div id="step-1" className="scroll-mt-6"><MainPanel><PlantBrowser selected={selected} onAdd={addPlant} onRemove={removePlant} /></MainPanel></div>
+        <div id="step-2" className="scroll-mt-6"><MainPanel><SelectedPlants selected={selected} onAdd={addPlant} onRemove={removePlant} /></MainPanel></div>
+        <div id="step-3" className="scroll-mt-6"><MainPanel><GeneratePlan selected={selected} /></MainPanel></div>
 
 
 
