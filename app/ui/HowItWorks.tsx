@@ -1,10 +1,11 @@
 import { outerCardClass } from "../lib/styles";
+import { Description, SubHeading } from "./Elements";
 
 
- 
 
 
-export function HowItWorks() {
+
+export default function HowItWorks() {
   const steps = [
     {
       number: "1",
@@ -27,9 +28,9 @@ export function HowItWorks() {
   ];
 
   return (
-    <div className={outerCardClass}>
-      <h2 className="text-xl font-semibold text-green-900 mb-1">How it works</h2>
-      <p className="text-sm text-stone-500 mb-6">Plan your garden in three simple steps before you buy.</p>
+    <>    
+    <SubHeading>How it works</SubHeading>
+      <Description>Plan your garden in three simple steps before you buy.</Description>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {steps.map((s) => (
           <a key={s.number} href={s.href} className="bg-stone-50 rounded-xl p-4 border border-stone-200 transition-colors block">
@@ -42,6 +43,6 @@ export function HowItWorks() {
           </a>
         ))}
       </div>
-    </div>
+    </>
   );
 }

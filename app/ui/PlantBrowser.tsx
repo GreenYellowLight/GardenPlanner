@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Plant } from '@/app/lib/types';
+import { Description, SubHeading } from "./Elements";
 
 const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
 const SHADE_TYPES = ["Full Sun", "Part Shade", "Full Shade"];
@@ -48,11 +49,10 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
           <rect width="58" height="26" rx="13" fill="#15803d" />
           <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 1</text>
         </svg>
-        <h2 className="text-xl font-semibold text-green-900">Choose your plants</h2>
+        
+        <SubHeading>Choose your plants</SubHeading>
       </div>
-      <p className="text-sm text-stone-500 mb-5">
-        Browse plants and add the ones you want in your garden. Filter by continent or shade requirements.
-      </p>
+      <Description>Browse plants and add the ones you want in your garden. Filter by continent or shade requirements.</Description>
 
       <div className="flex flex-wrap gap-2 mb-4 p-3 bg-stone-50 rounded-xl border border-stone-200">
         <input

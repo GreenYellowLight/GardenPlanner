@@ -1,6 +1,7 @@
 "use client";
 
 import type { Plant } from '@/app/lib/types';
+import { Description, SubHeading } from './Elements';
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -16,16 +17,15 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
           <rect width="58" height="26" rx="13" fill="#15803d" />
           <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 2</text>
         </svg>
-        <h2 className="text-xl font-semibold text-green-900">Your selection</h2>
+        <SubHeading>Your selection</SubHeading>
         {selected.length > 0 && (
           <span className="ml-auto text-sm font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full">
             {selected.reduce((sum, s) => sum + s.qty, 0)} plant{selected.reduce((sum, s) => sum + s.qty, 0) !== 1 ? 's' : ''}
           </span>
         )}
       </div>
-      <p className="text-sm text-stone-500 mb-5">
-        Plants you've added to your garden plan.
-      </p>
+ 
+      <Description>Plants you've added to your garden plan.</Description>
 
       {selected.length === 0 ? (
         <div className="text-center py-10 border border-dashed border-stone-300 rounded-xl">

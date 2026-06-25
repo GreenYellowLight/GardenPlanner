@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from "../lib/constants";
+import { Description, SubHeading } from "./Elements";
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -83,11 +84,12 @@ export default function GeneratePlan({ selected }: Props) {
           <rect width="58" height="26" rx="13" fill="#15803d" />
           <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 3</text>
         </svg>
-        <h2 className="text-xl font-semibold text-green-900">Generate your garden plan</h2>
+        <SubHeading>Generate your garden plan</SubHeading>
       </div>
-      <p className="text-sm text-stone-500 mb-6">
-        Upload a photo of the space you want to plant in, then let AI show you what it will look like.
-      </p>
+ 
+
+      <Description>Upload a photo of the space you want to plant in, then let AI show you what it will look like.</Description>
+
 
       <label className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
         photo ? 'border-green-400 bg-green-50' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'
