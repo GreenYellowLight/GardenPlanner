@@ -5,6 +5,7 @@ import SelectedPlants from "@/app/ui/SelectedPlants";
 import GeneratePlan from "@/app/ui/GeneratePlan";
 import { useSelectedPlants } from "@/app/lib/useSelectedPlants";
 import HowItWorks from "./ui/HowItWorks";
+import DemoExample from "./ui/DemoExample";
 import Header from "./ui/Header";
 import { MainPanel } from "./ui/Elements";
 
@@ -21,6 +22,7 @@ export default function Page() {
       <main className="max-w-3xl mx-auto px-4 py-10 w-full flex flex-col gap-6">
 
         <MainPanel><HowItWorks/> </MainPanel>
+        <DemoExample />
         <MainPanel><PlantBrowser selected={selected} onAdd={addPlant} onRemove={removePlant} /> </MainPanel>
         <MainPanel><SelectedPlants selected={selected} onAdd={addPlant} onRemove={removePlant} /> </MainPanel>
         <MainPanel> <GeneratePlan selected={selected} /></MainPanel>

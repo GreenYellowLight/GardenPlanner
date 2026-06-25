@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from "../lib/constants";
-import { Description, SubHeading, StepPill } from "./Elements";
+import { Description, SectionHeader, Spinner, GeneratedImage } from "./Elements";
+
+const RATE_LIMIT_MSG = 'Too many gardens generated recently — please try again in an hour.'
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -33,7 +35,7 @@ export default function GeneratePlan({ selected }: Props) {
     try {
       const allowed = await validateCount()
       if (!allowed) {
-        setError('Too many gardens generated recently — please try again in an hour.')
+        setError(RATE_LIMIT_MSG)
         return
       }
 
@@ -45,12 +47,11 @@ export default function GeneratePlan({ selected }: Props) {
         setError(uploadData.error ?? 'Failed to upload photo.')
         return
       }
-      const { url } = uploadData
 
       const plantNames = selected.map(s => s.plant.name)
-      const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, url)
+      const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, uploadData.url)
       if (actionError === 'TOO_MANY_REQUESTS') {
-        setError('Too many gardens generated recently — please try again in an hour.')
+        setError(RATE_LIMIT_MSG)
       } else {
         setGeneratedImage(resultUrl)
         setGenerating(false)
@@ -62,7 +63,7 @@ export default function GeneratePlan({ selected }: Props) {
           setGeneratingFuture(false)
         }
       }
-    } catch (e: any) {
+    } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setGenerating(false);
@@ -71,7 +72,7 @@ export default function GeneratePlan({ selected }: Props) {
 
   const canGenerate = !generating && !!photo && selected.length > 0 && !generatedImage
 
-  const generatingHint =
+  const hint =
     !photo && selected.length === 0 ? 'Add some plants and a photo before generating.' :
     !photo                          ? 'Add a photo before generating.' :
     selected.length === 0           ? 'Add some plants before generating.' :
@@ -79,14 +80,8 @@ export default function GeneratePlan({ selected }: Props) {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-1">
-        <StepPill step={3} />
-        <SubHeading>Generate your garden plan</SubHeading>
-      </div>
- 
-
+      <SectionHeader step={3}>Generate your garden plan</SectionHeader>
       <Description>Upload a photo of the space you want to plant in, then let AI show you what it will look like.</Description>
-
 
       <label className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
         photo ? 'border-green-400 bg-green-50' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'
@@ -133,7 +128,7 @@ export default function GeneratePlan({ selected }: Props) {
         </div>
       )}
 
-      {generatingHint && <p className="mt-4 text-sm text-red-500">{generatingHint}</p>}
+      {hint && <p className="mt-4 text-sm text-red-500">{hint}</p>}
 
       <button
         onClick={handleGenerate}
@@ -144,53 +139,24 @@ export default function GeneratePlan({ selected }: Props) {
       </button>
 
       {generating && (
-        <div className="mt-6 flex flex-col items-center gap-3 py-6">
-          <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
-          <p className="text-sm text-stone-400">This may take up to 30 seconds...</p>
+        <div className="mt-6 py-6">
+          <Spinner label="This may take up to 30 seconds..." />
         </div>
       )}
 
       {generatedImage && (
         <div className="mt-8 flex flex-col gap-6">
-          <div>
-            <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">Your garden — freshly planted</p>
-            <img
-              src={generatedImage}
-              alt="Generated garden plan"
-              className="w-full rounded-xl border border-stone-200 shadow-md cursor-zoom-in"
-              onClick={() => window.open(generatedImage, '_blank')}
-            />
-          </div>
+          <GeneratedImage label="Your garden — freshly planted" src={generatedImage} alt="Generated garden plan" />
 
-          <div>
-            <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">5 years from now</p>
-            {generatingFuture ? (
-              <div className="flex flex-col items-center gap-3 py-12 border border-dashed border-stone-300 rounded-xl">
-                <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
-                <p className="text-sm text-stone-400">Generating your garden in 5 years...</p>
-              </div>
-            ) : futureImage ? (
-              <img
-                src={futureImage}
-                alt="Garden in 5 years"
-                className="w-full rounded-xl border border-stone-200 shadow-md cursor-zoom-in"
-                onClick={() => window.open(futureImage, '_blank')}
-              />
-            ) : null}
-          </div>
+          {generatingFuture ? (
+            <div className="py-12 border border-dashed border-stone-300 rounded-xl">
+              <Spinner label="Generating your garden in 5 years..." />
+            </div>
+          ) : futureImage ? (
+            <GeneratedImage label="5 years from now" src={futureImage} alt="Garden in 5 years" />
+          ) : null}
 
-          <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
-            <p className="font-semibold text-green-900 mb-1">Ready to bring your garden to life?</p>
-            <p className="text-sm text-green-700 mb-4">
-              All {selected.length} plant{selected.length !== 1 ? 's' : ''} in your plan are available to order from Lots of Plants Victoria — online or in-store.
-            </p>
-            <a
-              href="#"
-              className="inline-block bg-green-700 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-green-800 transition-colors text-sm shadow-sm"
-            >
-              Order your plants
-            </a>
-          </div>
+   
         </div>
       )}
     </div>

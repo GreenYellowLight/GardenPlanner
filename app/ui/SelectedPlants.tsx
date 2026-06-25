@@ -1,7 +1,7 @@
 "use client";
 
 import type { Plant } from '@/app/lib/types';
-import { Description, SubHeading, StepPill } from './Elements';
+import { Description, StepPill, SubHeading, PlantSelection } from './Elements';
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -10,18 +10,20 @@ type Props = {
 };
 
 export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
+  const totalQty = selected.reduce((sum, s) => sum + s.qty, 0)
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
         <StepPill step={2} />
         <SubHeading>Your selection</SubHeading>
-        {selected.length > 0 && (
+        {totalQty > 0 && (
           <span className="ml-auto text-sm font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full">
-            {selected.reduce((sum, s) => sum + s.qty, 0)} plant{selected.reduce((sum, s) => sum + s.qty, 0) !== 1 ? 's' : ''}
+            {totalQty} plant{totalQty !== 1 ? 's' : ''}
           </span>
         )}
       </div>
- 
+
       <Description>Plants you've added to your garden plan.</Description>
 
       {selected.length === 0 ? (
@@ -29,33 +31,16 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
           <p className="text-stone-400">No plants selected yet — add some above.</p>
         </div>
       ) : (
-        <div className="border border-stone-200 rounded-xl overflow-hidden divide-y divide-stone-100">
-          {selected.map(({ plant, qty }) => (
-            <div
-              key={plant.id}
-              className="flex items-center justify-between px-4 py-3 hover:bg-stone-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <img
-                  src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`}
-                  alt={plant.name}
-                  className="w-12 h-12 rounded-xl object-cover flex-shrink-0 shadow-sm"
-                  onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/48x48/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
-                />
-                <div>
-                  <p className="font-semibold text-green-900">{plant.name}</p>
-                  <p className="text-sm text-stone-400">{plant.origin_continent} · {plant.shade_requirement}</p>
-                </div>
-              </div>
-              <div className="ml-4 flex items-center gap-2">
-                <button onClick={() => onRemove(plant)} className="w-8 h-8 rounded-lg border border-stone-300 text-stone-600 font-bold hover:bg-stone-100 transition-colors">−</button>
-                <span className="text-sm font-semibold w-5 text-center">{qty}</span>
-                <button onClick={() => onAdd(plant)} className="w-8 h-8 rounded-lg bg-green-700 text-white font-bold hover:bg-green-800 transition-colors">+</button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <PlantSelection
+          plants={selected.map(s => s.plant)}
+          selected={selected}
+          onAdd={onAdd}
+          onRemove={onRemove}
+          imageSize="sm"
+        />
       )}
+
+      
     </div>
   );
 }

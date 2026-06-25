@@ -1,4 +1,3 @@
-import { outerCardClass } from "../lib/styles";
 import { Description, SubHeading, StepCircle } from "./Elements";
 
 
