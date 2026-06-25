@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Plant } from '@/app/lib/types';
-import { Description, SubHeading } from "./Elements";
+import { Description, SubHeading, StepPill } from "./Elements";
 
 const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
 const SHADE_TYPES = ["Full Sun", "Part Shade", "Full Shade"];
@@ -45,10 +45,7 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
-        <svg width="58" height="26" viewBox="0 0 58 26" className="flex-shrink-0">
-          <rect width="58" height="26" rx="13" fill="#15803d" />
-          <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 1</text>
-        </svg>
+        <StepPill step={1} />
         
         <SubHeading>Choose your plants</SubHeading>
       </div>

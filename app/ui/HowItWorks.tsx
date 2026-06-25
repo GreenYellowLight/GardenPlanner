@@ -1,5 +1,5 @@
 import { outerCardClass } from "../lib/styles";
-import { Description, SubHeading } from "./Elements";
+import { Description, SubHeading, StepCircle } from "./Elements";
 
 
 
@@ -34,12 +34,9 @@ export default function HowItWorks() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {steps.map((s) => (
           <a key={s.number} href={s.href} className="bg-stone-50 rounded-xl p-4 border border-stone-200 transition-colors block">
-            <svg width="28" height="28" viewBox="0 0 28 28" className="mb-3 flex-shrink-0">
-              <circle cx="14" cy="14" r="14" fill="#15803d" />
-              <text x="14" y="14" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">{s.number}</text>
-            </svg>
+            <StepCircle number={s.number} />
             <p className="font-semibold text-green-900 mb-1">{s.title}</p>
-            <p className="text-sm text-stone-500 leading-relaxed">{s.body}</p>
+             <Description>{s.body}</Description>
           </a>
         ))}
       </div>

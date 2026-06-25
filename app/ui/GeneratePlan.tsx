@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from "../lib/constants";
-import { Description, SubHeading } from "./Elements";
+import { Description, SubHeading, StepPill } from "./Elements";
 
 type Props = {
   selected: { plant: Plant; qty: number }[];
@@ -80,10 +80,7 @@ export default function GeneratePlan({ selected }: Props) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-1">
-        <svg width="58" height="26" viewBox="0 0 58 26" className="flex-shrink-0">
-          <rect width="58" height="26" rx="13" fill="#15803d" />
-          <text x="29" y="13" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="14" fontWeight="bold">Step 3</text>
-        </svg>
+        <StepPill step={3} />
         <SubHeading>Generate your garden plan</SubHeading>
       </div>
  
