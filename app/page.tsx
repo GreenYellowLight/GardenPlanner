@@ -22,7 +22,8 @@ export default function Page() {
       <main className="max-w-3xl mx-auto px-4 py-10 w-full flex flex-col gap-6">
 
         <MainPanel><HowItWorks/> </MainPanel>
-        <DemoExample />
+        
+        <MainPanel><DemoExample /></MainPanel>
         <div id="step-1" className="scroll-mt-6"><MainPanel><PlantBrowser selected={selected} onAdd={addPlant} onRemove={removePlant} /></MainPanel></div>
         <div id="step-2" className="scroll-mt-6"><MainPanel><SelectedPlants selected={selected} onAdd={addPlant} onRemove={removePlant} /></MainPanel></div>
         <div id="step-3" className="scroll-mt-6"><MainPanel><GeneratePlan selected={selected} /></MainPanel></div>

@@ -1,3 +1,5 @@
+import { SubHeading } from "./Elements"
+
 export default function DemoExample() {
   const images = [
     { src: "/demo-conversion/before.webp", label: "Your garden today" },
@@ -6,8 +8,9 @@ export default function DemoExample() {
   ]
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-8">
-      <h2 className="text-xl font-semibold text-green-900 mb-1">See it in action</h2>
+    <>
+
+      <SubHeading>See it in action</SubHeading>
       <p className="text-sm text-stone-500 mb-6">
         A real example using <span className="text-green-800">Flax Lilly</span> and <span className="text-green-800">2 × Shasta Daisy</span>.
       </p>
@@ -23,6 +26,6 @@ export default function DemoExample() {
           </div>
         ))}
       </div>
-    </div>
+    </>
   )
 }

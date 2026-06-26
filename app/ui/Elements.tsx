@@ -37,13 +37,13 @@ export function MainPanel({ children }: { children: React.ReactNode }) {
 
 export function SubHeading({ children }: { children: React.ReactNode }) {
     return (
-        <h2 className="text-xl font-semibold text-green-900">{children}</h2>
+        <h2 className="text-2xl font-semibold text-green-900">{children}</h2>
     )
 }
 
 export function Description({ children }: { children: React.ReactNode }) {
     return (
-        <p className="text-sm text-stone-500 mb-6">{children}</p>
+        <p className="text-m text-stone-500 mb-3">{children}</p>
     )
 }
 
@@ -142,11 +142,12 @@ export function Pagination({ page, pages, onPrev, onNext }: { page: number; page
     )
 }
 
-export function GeneratedImage({ label, src, alt }: { label: string; src: string; alt: string }) {
+export function GeneratedImage({ label, comment, src, alt }: { label: string; comment: string; src: string; alt: string }) {
     return (
         <div>
-             <SubHeading>{label}</SubHeading> 
-             {/* TODO: make this look nicer */}
+             <h2 className="text-2xl pt-2 leading-tight font-semibold text-green-900">{label}</h2>
+             <Description>{comment}</Description>
+
             <img
                 src={src}
                 alt={alt}
