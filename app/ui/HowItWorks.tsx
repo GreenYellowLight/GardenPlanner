@@ -9,19 +9,19 @@ export default function HowItWorks() {
     {
       number: "1",
       title: "Browse our plants",
-      body: "Filter by continent of origin or shade requirements to find what suits your garden.",
+      body: "Select the plants you want. Filter by continent and shade requirements to find what suits your garden.",
       href: "#step-1",
     },
     {
       number: "2",
       title: "Upload a photo",
-      body: "Take a photo of the space you want to plant in — a garden bed, a corner of your yard, or a balcony — and upload it here.",
+      body: "Take a photo of the where you want to plant and upload it here.",
       href: "#step-2",
     },
     {
       number: "3",
       title: "See your garden come to life",
-      body: "Our AI will show you exactly what your selected plants will look like in your space, freshly planted and again five years from now.",
+      body: "We'll use AI to show you what your plants will look like, freshly planted and again five years from now.",
       href: "#step-3",
     },
   ];
@@ -29,7 +29,7 @@ export default function HowItWorks() {
   return (
     <>    
     <SubHeading>How it works</SubHeading>
-      <Description>Plan your garden in three simple steps before you buy.</Description>
+      <Description>Plan your garden in three steps</Description>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {steps.map((s) => (
           <a key={s.number} href={s.href} className="bg-stone-50 rounded-xl p-4 border border-stone-200 transition-colors block">

@@ -6,17 +6,26 @@ type Leaf = { x: number; y: number; angle: number; scale: number; opacity: numbe
 
 function FernFrond() {
   return (
-    <g stroke="#4ade80" fill="none" strokeWidth="1.1" strokeLinecap="round">
-      <path d="M0,35 C1,15 0,-10 0,-40" />
-      <path d="M0,22 C-5,14 -16,12 -22,18" />
-      <path d="M0,22 C5,14 16,12 22,18" />
-      <path d="M0,10 C-4,2 -13,1 -18,7" />
-      <path d="M0,10 C4,2 13,1 18,7" />
-      <path d="M0,-2 C-3,-10 -10,-11 -14,-5" />
-      <path d="M0,-2 C3,-10 10,-11 14,-5" />
-      <path d="M0,-14 C-2,-20 -7,-21 -9,-16" />
-      <path d="M0,-14 C2,-20 7,-21 9,-16" />
-      <path d="M0,-26 C-1,-32 1,-34 0,-38" />
+    <g stroke="#4ade80" fill="none" strokeWidth="0.9" strokeLinecap="round">
+      {/* Main rachis with fiddlehead curl at top */}
+      <path d="M0,55 L0,-20 C0,-30 6,-42 13,-40 C18,-38 17,-31 12,-30 C9,-29 8,-34 10,-36" />
+      {/* Pinnae pairs, widest in lower-middle, tapering at both ends */}
+      <path d="M0,46 C-4,40 -10,40 -11,45" />
+      <path d="M0,46 C4,40 10,40 11,45" />
+      <path d="M0,36 C-8,28 -18,28 -19,34" />
+      <path d="M0,36 C8,28 18,28 19,34" />
+      <path d="M0,26 C-12,16 -24,16 -25,23" />
+      <path d="M0,26 C12,16 24,16 25,23" />
+      <path d="M0,16 C-13,5 -27,5 -27,13" />
+      <path d="M0,16 C13,5 27,5 27,13" />
+      <path d="M0,6 C-12,-4 -25,-4 -24,3" />
+      <path d="M0,6 C12,-4 25,-4 24,3" />
+      <path d="M0,-4 C-9,-13 -20,-14 -19,-7" />
+      <path d="M0,-4 C9,-13 20,-14 19,-7" />
+      <path d="M0,-13 C-6,-20 -14,-21 -13,-15" />
+      <path d="M0,-13 C6,-20 14,-21 13,-15" />
+      <path d="M0,-20 C-3,-26 -8,-26 -7,-21" />
+      <path d="M0,-20 C3,-26 8,-26 7,-21" />
     </g>
   );
 }

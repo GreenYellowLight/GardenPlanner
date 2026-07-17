@@ -47,6 +47,20 @@ export function Description({ children }: { children: React.ReactNode }) {
     )
 }
 
+export function Title({children}: {children: React.ReactNode}){
+    return (
+        <p className="font-semibold text-green-900 mb-1">{children}</p>
+    )
+
+}
+
+// export function DottedArea({children}: {children: React.ReactNode}){
+//      return (
+//         <div className="">{children}</div>
+//     )
+
+// }
+
 export function PlantImage({ plant, size = 'lg' }: { plant: Plant; size?: 'sm' | 'lg' }) {
     const dim = size === 'lg' ? 'w-16 h-16' : 'w-12 h-12'
     const px = size === 'lg' ? 64 : 48
@@ -90,7 +104,7 @@ export function PlantSelection({ plants, selected, onAdd, onRemove, imageSize = 
                   <PlantImage plant={plant} size={imageSize} />
                   <div className="min-w-0">
                     <p className="font-semibold text-green-900 break-words">{plant.name}</p>
-                    <p className="text-xs text-stone-400 mt-0.5">{plant.origin_continent} · {plant.shade_requirement}</p>
+                    <p className="text-stone-400 mt-0.5">{plant.origin_continent} · {plant.shade_requirement}</p>
                   </div>
                 </div>
                 {qty === 0 ? (

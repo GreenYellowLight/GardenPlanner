@@ -40,7 +40,7 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
   return (
     <div>
       <SectionHeader step={1}>Choose your plants</SectionHeader>
-      <Description>Browse plants and add the ones you want in your garden. Filter by continent or shade requirements.</Description>
+      <Description>Browse plants and add the ones you want in your garden. Filter by continent or shade requirements</Description>
 
       <div className="flex flex-wrap gap-2 mb-4 p-3 bg-stone-50 rounded-xl border border-stone-200">
         <input

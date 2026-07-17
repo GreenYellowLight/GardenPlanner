@@ -24,12 +24,13 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
         )}
       </div>
 
-      <Description>Plants you've added to your garden plan.</Description>
+      <Description>Plants you've added to your garden plan</Description>
 
       {selected.length === 0 ? (
-        <div className="text-center py-10 border border-dashed border-stone-300 rounded-xl">
-          <p className="text-stone-400">No plants selected yet — add some above.</p>
-        </div>
+
+        <p className="text-stone-400 dotted-outline-text">No plants selected yet — add some above.</p>
+
+
       ) : (
         <PlantSelection
           plants={selected.map(s => s.plant)}
@@ -40,7 +41,7 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
         />
       )}
 
-      
+
     </div>
   );
 }

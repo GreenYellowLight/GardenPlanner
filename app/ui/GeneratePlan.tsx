@@ -83,16 +83,16 @@ export default function GeneratePlan({ selected }: Props) {
   return (
     <div>
       <SectionHeader step={3}>Generate your garden plan</SectionHeader>
-      <Description>Upload a photo of the space you want to plant in, then let AI show you what it will look like.</Description>
+      <Description>Upload a photo of the space you want to plant in, then let AI show you what it will look like</Description>
 
-      <label className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+      <label className={`block dotted-outline-text  p-8 text-center cursor-pointer transition-colors ${
         photo ? 'border-green-400 bg-green-50' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'
       }`}>
         {photo ? (
           <p className="text-green-700 font-medium">{photo.name} — click to change</p>
         ) : (
           <>
-            <p className="text-stone-600 font-medium">Click to upload a photo of your garden</p>
+            <p className="text-stone-400 font-medium">Click to upload a photo of your garden</p>
             <p className="text-xs text-stone-400 mt-1">JPEG, PNG or WebP · max {MAX_PHOTO_MB}MB</p>
           </>
         )}
@@ -148,14 +148,14 @@ export default function GeneratePlan({ selected }: Props) {
 
       {generatedImage && (
         <div className="mt-8 flex flex-col gap-6">
-          <GeneratedImage label="Your garden – freshly planted!" comment="Wow you have excellence planting skills" src={generatedImage} alt="Generated garden plan" />
+          <GeneratedImage label="Your garden – freshly planted!" comment="Wow you have excellence planting skills." src={generatedImage} alt="Generated garden plan" />
 
           {generatingFuture ? (
             <div className="py-12 border border-dashed border-stone-300 rounded-xl">
               <Spinner label="Generating your garden in 5 years..." />
             </div>
           ) : futureImage ? (
-            <GeneratedImage label="5 years from now" comment="Wow you have excellence planting skills" src={futureImage} alt="Garden in 5 years" />
+            <GeneratedImage label="5 years from now" comment="Don't worry, the plants will do the work." src={futureImage} alt="Garden in 5 years" />
           ) : null}
 
    
