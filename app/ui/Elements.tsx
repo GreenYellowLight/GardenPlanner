@@ -43,7 +43,7 @@ export function SubHeading({ children }: { children: React.ReactNode }) {
 
 export function Description({ children }: { children: React.ReactNode }) {
     return (
-        <p className="text-m text-stone-500 mb-3">{children}</p>
+        <p className="text-stone-500 mb-3">{children}</p>
     )
 }
 
