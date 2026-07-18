@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from "../lib/constants";
@@ -20,6 +20,7 @@ export default function GeneratePlan({ selected }: Props) {
   const [generating, setGenerating] = useState(false);
   const [generatingFuture, setGeneratingFuture] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!photo) return
@@ -33,6 +34,7 @@ export default function GeneratePlan({ selected }: Props) {
   async function handleGenerate() {
     setGenerating(true);
     setError(null);
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 0);
 
     try {
       const allowed = await validateCount()
@@ -162,7 +164,7 @@ export default function GeneratePlan({ selected }: Props) {
         </div>
       )}
 
-      
+      <div ref={bottomRef} />
 
     </div>
   );
