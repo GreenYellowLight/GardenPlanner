@@ -148,14 +148,14 @@ export default function GeneratePlan({ selected }: Props) {
 
       {generatedImage && (
         <div className="mt-8 flex flex-col gap-6">
-          <GeneratedImage label="Your garden – freshly planted!" comment="Wow you have excellence planting skills." src={generatedImage} alt="Generated garden plan" />
+          <GeneratedImage label="Your garden – freshly planted!" comment="Wow you have excellence planting skills" src={generatedImage} alt="Generated garden plan" />
 
           {generatingFuture ? (
             <div className="py-12 border border-dashed border-stone-300 rounded-xl">
               <Spinner label="Generating your garden in 5 years..." />
             </div>
           ) : futureImage ? (
-            <GeneratedImage label="5 years from now" comment="Don't worry, the plants will do the work." src={futureImage} alt="Garden in 5 years" />
+            <GeneratedImage label="5 years from now" comment="Don't worry, the plants will do the work" src={futureImage} alt="Garden in 5 years" />
           ) : null}
 
    
@@ -163,8 +163,6 @@ export default function GeneratePlan({ selected }: Props) {
       )}
 
       
-        <button className="p-5 hover:bg-green-200 bg-green-500" onClick={() => { setGeneratingFuture(false); setGeneratedImage("/demo-conversion/during.webp"); setFutureImage("/demo-conversion/after.webp"); }}>
-          Test</button>
 
     </div>
   );
