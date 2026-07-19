@@ -1,3 +1,5 @@
+
+/*
 import postgres from 'postgres';
 
 // Original plan was to use Bunnings' api. Did not work out so doing this instead
@@ -115,3 +117,5 @@ export async function GET() {
     );
   }
 }
+
+*/
