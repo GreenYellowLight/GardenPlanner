@@ -91,7 +91,7 @@ export default function GeneratePlan({ selected }: Props) {
         photo ? 'border-green-400 bg-green-50' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'
       }`}>
         {photo ? (
-          <p className="text-green-700 font-medium">{photo.name} — click to change</p>
+          <p className="text-green-700 font-medium">{photo.name} – click to change</p>
         ) : (
           <>
             <p className="text-stone-400 font-medium">Click to upload a photo of your garden</p>

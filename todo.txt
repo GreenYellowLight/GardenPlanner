@@ -10,4 +10,6 @@ make it scroll down autiomatically after pressing genreate.
 
 with phone select plant is on two lines
 
-DEMO photo!!!
+
+
+cshould no longer be able to edit things after pressing genreate
