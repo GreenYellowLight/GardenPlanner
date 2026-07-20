@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { Plant } from '@/app/lib/types';
 import { Description, SectionHeader, PlantSelection, Pagination } from "./Elements";
+import { BASE_PATH } from "@/app/lib/constants";
 
 const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
 const SHADE_TYPES = ["Full Sun", "Part Shade", "Full Shade"];
@@ -23,7 +24,7 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
 
   useEffect(() => {
     const params = new URLSearchParams({ page: String(page), search, continent, shade });
-    fetch(`/api/plants?${params}`)
+    fetch(`${BASE_PATH}/api/plants?${params}`)
       .then((r) => r.json())
       .then((data) => {
         setPlants(data.plants ?? [])

@@ -1,10 +1,11 @@
 import { Description, SubHeading, Title } from "./Elements"
+import { BASE_PATH } from "@/app/lib/constants"
 
 export default function DemoExample() {
   const images = [
-    { src: "/demo-conversion/before.webp", label: "Your garden today" },
-    { src: "/demo-conversion/during.webp", label: "Freshly planted" },
-    { src: "/demo-conversion/after.webp", label: "5 years from now" },
+    { src: `${BASE_PATH}/demo-conversion/before.webp`, label: "Your garden today" },
+    { src: `${BASE_PATH}/demo-conversion/during.webp`, label: "Freshly planted" },
+    { src: `${BASE_PATH}/demo-conversion/after.webp`, label: "5 years from now" },
   ]
 
   return (

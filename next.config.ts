@@ -1,15 +1,7 @@
-import type { NextConfig } from "next";
+import { BASE_PATH } from './app/lib/constants';
 
-const nextConfig: NextConfig = {
-  basePath: "/garden-planner",
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-    ],
-  },
-};
+const nextConfig: import('next').NextConfig = {
+  basePath: BASE_PATH,
+}
 
 export default nextConfig;

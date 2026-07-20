@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
-import { MAX_PHOTO_MB, MAX_PHOTO_BYTES } from "../lib/constants";
+import { MAX_PHOTO_MB, MAX_PHOTO_BYTES, BASE_PATH } from "../lib/constants";
 import { Description, SectionHeader, Spinner, GeneratedImage } from "./Elements";
 
 const RATE_LIMIT_MSG = 'Too many gardens generated recently — please try again in an hour.'
@@ -45,7 +45,7 @@ export default function GeneratePlan({ selected }: Props) {
 
       const formData = new FormData()
       formData.append('photo', photo!)
-      const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
+      const uploadRes = await fetch(`${BASE_PATH}/api/upload`, { method: 'POST', body: formData })
       const uploadData = await uploadRes.json()
       if (!uploadRes.ok) {
         setError(uploadData.error ?? 'Failed to upload photo.')

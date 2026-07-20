@@ -24,7 +24,7 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
         )}
       </div>
 
-      <Description>Plants you've added to your garden plan</Description>
+      <Description>Plants you&aposve added to your garden plan</Description>
 
       {selected.length === 0 ? (
 
