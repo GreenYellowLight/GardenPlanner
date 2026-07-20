@@ -4,7 +4,7 @@ export default function DemoExample() {
   const images = [
     { src: "/demo-conversion/before.webp", label: "Your garden today" },
     { src: "/demo-conversion/during.webp", label: "Freshly planted" },
-    { src: "/garden-planner/demo-conversion/after.webp", label: "5 years from now" },
+    { src: "/demo-conversion/after.webp", label: "5 years from now" },
   ]
 
   return (
