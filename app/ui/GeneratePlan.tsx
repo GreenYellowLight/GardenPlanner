@@ -5,6 +5,7 @@ import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES, BASE_PATH } from "../lib/constants";
 import { Description, SectionHeader, Spinner, GeneratedImage } from "./Elements";
+import Image from 'next/image'
 
 const RATE_LIMIT_MSG = 'Too many gardens generated recently — please try again in an hour.'
 
@@ -118,7 +119,7 @@ export default function GeneratePlan({ selected }: Props) {
       {photo && photoUrl && (
         <div className="mt-4">
           <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">Preview</p>
-          <img
+          <Image
             src={photoUrl}
             alt="preview"
             className="w-full max-h-72 object-cover rounded-xl border border-stone-200 shadow-sm"

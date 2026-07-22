@@ -3,6 +3,8 @@ export default function Header() {
     return (
         <header className="w-full bg-green-900  px-6 py-16 shadow-lg">
             <div className="max-w-3xl mx-auto px-4">
+            
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                 <a
                     href="/"
                     className="inline-block mb-4 text-green-100  hover:text-white transition-colors"

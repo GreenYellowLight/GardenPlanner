@@ -1,4 +1,8 @@
+'use client'
+import { useState } from 'react'
 import type { Plant } from "@/app/lib/types";
+import Image from 'next/image'
+import { BASE_PATH } from "@/app/lib/constants"
 
 export function StepCircle({ number }: { number: string }) {
     return (
@@ -54,22 +58,17 @@ export function Title({children}: {children: React.ReactNode}){
 
 }
 
-// export function DottedArea({children}: {children: React.ReactNode}){
-//      return (
-//         <div className="">{children}</div>
-//     )
 
-// }
-
-export function PlantImage({ plant, size = 'lg' }: { plant: Plant; size?: 'sm' | 'lg' }) {
-    const dim = size === 'lg' ? 'w-16 h-16' : 'w-12 h-12'
-    const px = size === 'lg' ? 64 : 48
+export function PlantImage({ plant }: { plant: Plant}) {
+    const [src, setSrc] = useState(`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`)
     return (
-        <img
-            src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/plant-list/${plant.name.toLowerCase().replace(/\s+/g, '-')}.webp`}
+        <Image
+            src={src}
             alt={plant.name}
-            className={`${dim} rounded-xl object-cover flex-shrink-0 shadow-sm`}
-            onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/${px}x${px}/86efac/166534?text=${encodeURIComponent(plant.name[0])}` }}
+            width={200}
+            height={200}
+            className={`w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-sm`}
+            onError={() => setSrc(`${BASE_PATH}/one-letter-placeholders/${plant.name[0].toUpperCase()}.svg`)}
         />
     )
 }
@@ -82,7 +81,7 @@ type PlantSelectionProps = {
   imageSize?: 'sm' | 'lg';
 };
 
-export function PlantSelection({ plants, selected, onAdd, onRemove, imageSize = 'lg' }: PlantSelectionProps) {
+export function PlantSelection({ plants, selected, onAdd, onRemove}: PlantSelectionProps) {
     
     function qtyOf(plant: Plant) {
         return selected.find((s) => s.plant.id === plant.id)?.qty ?? 0
@@ -101,7 +100,7 @@ export function PlantSelection({ plants, selected, onAdd, onRemove, imageSize = 
                 className={`flex items-center px-4 py-3 transition-colors ${qty > 0 ? "bg-green-50" : "hover:bg-stone-50"}`}
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <PlantImage plant={plant} size={imageSize} />
+                  <PlantImage plant={plant}/>
                   <div className="min-w-0">
                     <p className="font-semibold text-green-900 break-words">{plant.name}</p>
                     <p className="text-stone-400 mt-0.5">{plant.origin_continent} · {plant.shade_requirement}</p>
@@ -162,7 +161,7 @@ export function GeneratedImage({ label, comment, src, alt }: { label: string; co
              <h2 className="text-2xl pt-2 leading-tight font-semibold text-green-900">{label}</h2>
              <Description>{comment}</Description>
 
-            <img
+            <Image
                 src={src}
                 alt={alt}
                 className="w-full rounded-xl border border-stone-200 shadow-md cursor-zoom-in"

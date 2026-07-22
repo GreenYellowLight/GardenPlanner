@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
             ContentType: file.type,
         }))
 
-        const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
+        const url = `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${key}`
         return Response.json({ url, filename: key })
     } catch (e) {
         console.error('S3 error:', e)

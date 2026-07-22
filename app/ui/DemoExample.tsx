@@ -1,5 +1,6 @@
 import { Description, SubHeading, Title } from "./Elements"
 import { BASE_PATH } from "@/app/lib/constants"
+import Image from 'next/image'
 
 export default function DemoExample() {
   const images = [
@@ -19,9 +20,11 @@ export default function DemoExample() {
         {images.map(({ src, label }) => (
           <div key={src}>
             <Title>{label}</Title>
-            <img
+            <Image
               src={src}
               alt={label}
+              width={890}
+              height={534}
               className="w-full rounded-xl object-cover aspect-video border border-stone-200 shadow-sm"
             />
           </div>

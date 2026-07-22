@@ -1,6 +1,6 @@
 export {};
 
-/*
+
 import postgres from 'postgres';
 
 // Original plan was to use Bunnings' api. Did not work out so doing this instead
@@ -39,7 +39,7 @@ export async function GET() {
     await sql`
       INSERT INTO plant (name, slug, price, origin_continent, max_height_cm, max_width_cm, shade_requirement)
       VALUES
-        ('Waratah', 'waratah', 12.99, 'Oceania', 180, 150, 'Full Sun'),
+        ('Waratahzzzz', 'waratahzzzzz', 12.99, 'Oceania', 180, 150, 'Full Sun'),
         ('Kangaroo Paw', 'kangaroo-paw', 8.99, 'Oceania', 150, 100, 'Full Sun'),
         ('Dwarf Bottlebrush', 'dwarf-bottlebrush', 14.99, 'Oceania', 150, 120, 'Full Sun'),
         ('Blue Flax Lily', 'blue-flax-lily', 7.99, 'Oceania', 100, 80, 'Part Shade'),
@@ -119,4 +119,3 @@ export async function GET() {
   }
 }
 
-*/
