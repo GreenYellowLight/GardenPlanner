@@ -25,6 +25,7 @@ export default function DemoExample() {
             <Image
               src={src}
               alt={label}
+              loading="eager"
               width={1190}
               height={465}
               className="w-full rounded-xl border border-stone-200 shadow-sm"
