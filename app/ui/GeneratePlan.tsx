@@ -75,6 +75,17 @@ export default function GeneratePlan({ selected }: Props) {
     }
   }
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null
+    if (file && file.size > MAX_PHOTO_BYTES) {
+      setError(`Photo is too large (max ${MAX_PHOTO_MB}MB).`)
+      setPhoto(null)
+    } else {
+      setError(null)
+      setPhoto(file)
+    }
+  }
+
   const canGenerate = !generating && !!photo && selected.length > 0 && !generatedImage
 
   const hint =
@@ -86,44 +97,39 @@ export default function GeneratePlan({ selected }: Props) {
   return (
     <div>
       <SectionHeader step={3}>Generate your garden plan</SectionHeader>
-      <Description>Upload a photo of the space you want to plant in, then let AI show you what it will look like</Description>
+      <Description>Add a photo of the space you want to plant in, then let AI show you what it will look like</Description>
 
-      <label className={`block dotted-outline-text  p-8 text-center cursor-pointer transition-colors ${
-        photo ? 'border-green-400 bg-green-50' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'
-      }`}>
-        {photo ? (
+      {photo ? (
+        <label className="block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-green-400 bg-green-50">
           <p className="text-green-700 font-medium">{photo.name} – click to change</p>
-        ) : (
-          <>
-            <p className="text-stone-400 font-medium">Click to upload a photo of your garden</p>
-            <p className="text-xs text-stone-400 mt-1">JPEG, PNG or WebP · max {MAX_PHOTO_MB}MB</p>
-          </>
-        )}
-        <input
-          className="hidden"
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files?.[0] ?? null
-            if (file && file.size > MAX_PHOTO_BYTES) {
-              setError(`Photo is too large (max ${MAX_PHOTO_MB}MB).`)
-              setPhoto(null)
-            } else {
-              setError(null)
-              setPhoto(file)
-            }
-          }}
-        />
-      </label>
+          <input className="hidden" type="file" accept="image/*" onChange={handleFileChange} />
+        </label>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
+          <label className="block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-stone-300 hover:border-green-400 hover:bg-green-50">
+            <p className="text-stone-400 font-medium">Upload photo</p>
+            <p className="text-xs text-stone-400 mt-1">JPEG, PNG or WebP</p>
+            <input className="hidden" type="file" accept="image/*" onChange={handleFileChange} />
+          </label>
+          <label className="md:hidden block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-stone-300 hover:border-green-400 hover:bg-green-50">
+            <p className="text-stone-400 font-medium">Take a photo</p>
+            <p className="text-xs text-stone-400 mt-1">Use your camera</p>
+            <input className="hidden" type="file" accept="image/*" capture="environment" onChange={handleFileChange} />
+          </label>
+        </div>
+      )}
 
       {photo && photoUrl && (
         <div className="mt-4">
           <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">Preview</p>
-          <Image
-            src={photoUrl}
-            alt="preview"
-            className="w-full max-h-72 object-cover rounded-xl border border-stone-200 shadow-sm"
-          />
+          <div className="relative w-full max-h-72 aspect-video">
+            <Image
+              src={photoUrl}
+              alt="preview"
+              fill
+              className="object-cover rounded-xl border border-stone-200 shadow-sm"
+            />
+          </div>
         </div>
       )}
 
