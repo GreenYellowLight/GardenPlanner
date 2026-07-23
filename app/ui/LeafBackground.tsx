@@ -34,17 +34,20 @@ export default function LeafBackground() {
   const [leaves, setLeaves] = useState<Leaf[]>([]);
 
   useEffect(() => {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    setLeaves(
-      Array.from({ length: 50 }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        angle: Math.random() * 360,
-        scale: 0.3 + Math.random() * Math.random() * 1.8,
-        opacity: 0.15 + Math.random() * 0.3,
-      }))
-    );
+    function generate() {
+      setLeaves(
+        Array.from({ length: 50 }, () => ({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          angle: Math.random() * 360,
+          scale: 0.3 + Math.random() * Math.random() * 1.8,
+          opacity: 0.15 + Math.random() * 0.3,
+        }))
+      );
+    }
+    const observer = new ResizeObserver(generate);
+    observer.observe(document.documentElement);
+    return () => observer.disconnect();
   }, []);
 
   if (leaves.length === 0) return null;

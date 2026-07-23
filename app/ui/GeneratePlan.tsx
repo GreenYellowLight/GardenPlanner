@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES, BASE_PATH } from "../lib/constants";
@@ -23,12 +23,6 @@ export default function GeneratePlan({ selected }: Props) {
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!photo) return
-    const url = URL.createObjectURL(photo)
-    setPhotoUrl(url)
-    return () => URL.revokeObjectURL(url)
-  }, [photo])
 
 
 
@@ -62,7 +56,7 @@ export default function GeneratePlan({ selected }: Props) {
         setGenerating(false)
         setGeneratingFuture(true)
         try {
-          const { url: futureUrl } = await getGardenFutureImage(resultUrl!, plantNames)
+          const { url: futureUrl } = await getGardenFutureImage(resultUrl!)
           setFutureImage(futureUrl)
         } finally {
           setGeneratingFuture(false)
@@ -77,12 +71,15 @@ export default function GeneratePlan({ selected }: Props) {
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null
+    if (photoUrl) URL.revokeObjectURL(photoUrl)
     if (file && file.size > MAX_PHOTO_BYTES) {
       setError(`Photo is too large (max ${MAX_PHOTO_MB}MB).`)
       setPhoto(null)
+      setPhotoUrl(undefined)
     } else {
       setError(null)
       setPhoto(file)
+      setPhotoUrl(file ? URL.createObjectURL(file) : undefined)
     }
   }
 
@@ -161,10 +158,10 @@ export default function GeneratePlan({ selected }: Props) {
 
           {generatingFuture ? (
             <div className="py-12 border border-dashed border-stone-300 rounded-xl">
-              <Spinner label="Generating your garden in 5 years..." />
+              <Spinner label="Generating your garden in 3 years..." />
             </div>
           ) : futureImage ? (
-            <GeneratedImage label="5 years from now" comment="Don't worry, the plants will do the work" src={futureImage} alt="Garden in 5 years" />
+            <GeneratedImage label="3 years from now" comment="Don't worry, the plants will do the work" src={futureImage} alt="Garden in 3 years" />
           ) : null}
 
    

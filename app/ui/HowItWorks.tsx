@@ -21,7 +21,7 @@ export default function HowItWorks() {
     {
       number: "3",
       title: "See your garden come to life",
-      body: "We'll use AI to show you what your plants will look like, freshly planted and again five years from now.",
+      body: "We'll use AI to show you what your plants will look like, freshly planted and again three years from now.",
       href: "#step-3",
     },
   ];

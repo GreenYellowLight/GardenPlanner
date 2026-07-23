@@ -24,7 +24,7 @@
     const total = rows.length > 0 ? parseInt(rows[0].total) : 0
 
     return Response.json({
-        plants: rows.map(({ total: _, ...p }) => p),   
+        plants: rows.map(({ total: _total, ...p }) => p),   
         pages: Math.ceil(total / pageLength)
     })
 
