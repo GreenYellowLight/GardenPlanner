@@ -90,7 +90,7 @@ export function PlantSelection({ plants, selected, onAdd, onRemove}: PlantSelect
     return (
           <div className="border border-stone-200 rounded-xl overflow-hidden divide-y divide-stone-100">
         {plants.length === 0 ? (
-          <p className="text-center text-stone-400 py-10">No plants found</p>
+          <p className="text-center text-stone-500 py-10">No plants found</p>
         ) : (
           plants.map((plant) => {
             const qty = qtyOf(plant)
@@ -103,7 +103,7 @@ export function PlantSelection({ plants, selected, onAdd, onRemove}: PlantSelect
                   <PlantImage plant={plant}/>
                   <div className="min-w-0">
                     <p className="font-semibold text-green-900 break-words">{plant.name}</p>
-                    <p className="text-stone-400 mt-0.5">{plant.origin_continent} · {plant.shade_requirement}</p>
+                    <p className="text-stone-500 mt-0.5">{plant.origin_continent} · {plant.shade_requirement}</p>
                   </div>
                 </div>
                 {qty === 0 ? (
@@ -139,7 +139,7 @@ export function Spinner({ label }: { label: string }) {
     return (
         <div className="flex flex-col items-center gap-3">
             <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
-            <p className="text-sm text-stone-400">{label}</p>
+            <p className="text-sm text-stone-500">{label}</p>
         </div>
     )
 }
@@ -149,7 +149,7 @@ export function Pagination({ page, pages, onPrev, onNext }: { page: number; page
     return (
         <div className="flex items-center justify-center gap-3 mt-4">
             <button onClick={onPrev} disabled={page === 1} className={btnClass}>← Prev</button>
-            <span className="text-sm text-stone-400">Page {page} of {pages}</span>
+            <span className="text-sm text-stone-500">Page {page} of {pages}</span>
             <button onClick={onNext} disabled={page === pages} className={btnClass}>Next →</button>
         </div>
     )

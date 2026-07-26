@@ -104,13 +104,13 @@ export default function GeneratePlan({ selected }: Props) {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
           <label className="block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-stone-300 hover:border-green-400 hover:bg-green-50">
-            <p className="text-stone-400 font-medium">Upload photo</p>
-            <p className="text-xs text-stone-400 mt-1">JPEG, PNG or WebP</p>
+            <p className="text-stone-500 font-medium">Upload photo</p>
+            <p className="text-xs text-stone-500 mt-1">JPEG, PNG or WebP</p>
             <input className="hidden" type="file" accept="image/*" onChange={handleFileChange} />
           </label>
           <label className="md:hidden block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-stone-300 hover:border-green-400 hover:bg-green-50">
-            <p className="text-stone-400 font-medium">Take a photo</p>
-            <p className="text-xs text-stone-400 mt-1">Use your camera</p>
+            <p className="text-stone-500 font-medium">Take a photo</p>
+            <p className="text-xs text-stone-500 mt-1">Use your camera</p>
             <input className="hidden" type="file" accept="image/*" capture="environment" onChange={handleFileChange} />
           </label>
         </div>
@@ -118,7 +118,7 @@ export default function GeneratePlan({ selected }: Props) {
 
       {photo && photoUrl && (
         <div className="mt-4">
-          <p className="text-xs text-stone-400 mb-2 uppercase tracking-wide font-medium">Preview</p>
+          <p className="text-xs text-stone-500 mb-2 uppercase tracking-wide font-medium">Preview</p>
           <div className="relative w-full max-h-72 aspect-video">
             <Image
               src={photoUrl}
@@ -136,12 +136,12 @@ export default function GeneratePlan({ selected }: Props) {
         </div>
       )}
 
-      {hint && <p className="mt-4 text-sm text-red-500">{hint}</p>}
+      {hint && <p className="mt-4 text-sm text-red-600">{hint}</p>}
 
       <button
         onClick={handleGenerate}
         disabled={!canGenerate}
-        className="mt-6 w-full py-3 rounded-xl text-base font-semibold bg-green-700 text-white hover:bg-green-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+        className="mt-6 w-full py-3 rounded-xl font-semibold bg-green-700 text-white hover:bg-green-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
       >
         {generating ? "Generating your garden..." : "Generate Garden Plan"}
       </button>

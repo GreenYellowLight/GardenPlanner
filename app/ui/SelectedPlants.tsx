@@ -28,7 +28,7 @@ export default function SelectedPlants({ selected, onAdd, onRemove }: Props) {
 
       {selected.length === 0 ? (
 
-        <p className="text-stone-400 dotted-outline-text">No plants selected yet — add some above.</p>
+        <p className="text-stone-500 dotted-outline-text">No plants selected yet — add some above.</p>
 
 
       ) : (
