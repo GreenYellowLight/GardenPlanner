@@ -112,7 +112,7 @@ export default function GeneratePlan({ selected }: Props) {
 
       <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
         <PhotoOption label="Upload photo" sub="JPEG, PNG or WebP" selected={!!photo} onChange={handleFileChange} />
-        <PhotoOption label="Take a photo" sub="Use your camera" selected={!!photo} onChange={handleFileChange} capture className="md:hidden" />
+        <PhotoOption label="Take photo" sub="Use your camera" selected={!!photo} onChange={handleFileChange} capture className="md:hidden" />
       </div>
 
       {photo && photoUrl && (
