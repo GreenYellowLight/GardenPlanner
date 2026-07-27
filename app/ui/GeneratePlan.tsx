@@ -9,6 +9,20 @@ import Image from 'next/image'
 
 const RATE_LIMIT_MSG = 'Too many gardens generated recently — please try again in an hour.'
 
+function PhotoOption({ label, sub, selected, onChange, capture, className = '' }: {
+  label: string; sub: string; selected: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  capture?: boolean; className?: string;
+}) {
+  return (
+    <label className={`${className} block dotted-outline-text p-8 text-center cursor-pointer transition-colors ${selected ? 'border-green-400 bg-green-50 hover:border-green-500' : 'border-stone-300 hover:border-green-400 hover:bg-green-50'}`}>
+      <p className={`font-medium ${selected ? 'text-emerald-700' : 'text-stone-500'}`}>{label}</p>
+      <p className={`text-xs mt-1 ${selected ? 'text-green-700' : 'text-stone-500'}`}>{sub}</p>
+      <input className="hidden" type="file" accept="image/*" onChange={onChange} {...(capture ? { capture: 'environment' } : {})} />
+    </label>
+  )
+}
+
 type Props = {
   selected: { plant: Plant; qty: number }[];
 };
@@ -96,25 +110,10 @@ export default function GeneratePlan({ selected }: Props) {
       <SectionHeader step={3}>Generate your garden plan</SectionHeader>
       <Description>Add a photo of the space you want to plant in, then let AI show you what it will look like</Description>
 
-      {photo ? (
-        <label className="block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-green-400 bg-green-50">
-          <p className="text-green-700 font-medium">{photo.name} – click to change</p>
-          <input className="hidden" type="file" accept="image/*" onChange={handleFileChange} />
-        </label>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
-          <label className="block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-stone-300 hover:border-green-400 hover:bg-green-50">
-            <p className="text-stone-500 font-medium">Upload photo</p>
-            <p className="text-xs text-stone-500 mt-1">JPEG, PNG or WebP</p>
-            <input className="hidden" type="file" accept="image/*" onChange={handleFileChange} />
-          </label>
-          <label className="md:hidden block dotted-outline-text p-8 text-center cursor-pointer transition-colors border-stone-300 hover:border-green-400 hover:bg-green-50">
-            <p className="text-stone-500 font-medium">Take a photo</p>
-            <p className="text-xs text-stone-500 mt-1">Use your camera</p>
-            <input className="hidden" type="file" accept="image/*" capture="environment" onChange={handleFileChange} />
-          </label>
-        </div>
-      )}
+      <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
+        <PhotoOption label="Upload photo" sub="JPEG, PNG or WebP" selected={!!photo} onChange={handleFileChange} />
+        <PhotoOption label="Take a photo" sub="Use your camera" selected={!!photo} onChange={handleFileChange} capture className="md:hidden" />
+      </div>
 
       {photo && photoUrl && (
         <div className="mt-4">
