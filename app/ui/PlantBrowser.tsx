@@ -36,8 +36,6 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
       })
   }, [page, search, continent, shade]);
 
-  const filterClass = "border border-stone-300 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
-
   return (
     <div>
       <SectionHeader step={1}>Choose your plants</SectionHeader>
@@ -49,12 +47,12 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1) }}
           placeholder="Search plants..."
-          className={`${filterClass} flex-1 min-w-32`}
+          className={`filter-options placeholder:text-zinc-500 flex-1 min-w-32`}
         />
         <select
           value={continent}
           onChange={(e) => { setContinent(e.target.value); setPage(1) }}
-          className={filterClass}
+          className="filter-options"
         >
           <option value="">All continents</option>
           {CONTINENTS.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -62,7 +60,7 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
         <select
           value={shade}
           onChange={(e) => { setShade(e.target.value); setPage(1) }}
-          className={filterClass}
+          className="filter-options"
         >
           <option value="">All shade types</option>
           {SHADE_TYPES.map((s) => <option key={s} value={s}>{s}</option>)}

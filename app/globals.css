@@ -29,3 +29,8 @@ body {
   @apply  text-center py-10 border border-dashed border-stone-300 rounded-xl
 }
 
+
+.filter-options {
+  @apply border border-stone-300 rounded-lg px-3 py-2 text-sm bg-white outline-none 
+  focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors
+}
