@@ -30,7 +30,23 @@ async function editImage(prompt: string, image_url: string): Promise<string | nu
     return result.data.images?.[0]?.url ?? null
 }
 
-export async function getGardenPlannerImage(plants: string[], img_url: string): Promise<{ url: string | null, error?: string }> {
+export async function verifyCaptcha(token: string): Promise<boolean> {
+
+    if (process.env.NEXT_PUBLIC_DEVELOPER_MODE === 'true')  return true
+
+    const res = await fetch('https://api.hcaptcha.com/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ secret: process.env.HCAPTCHA_SECRET_KEY!, response: token }),
+    })
+    const data = await res.json()
+    return data.success === true
+}
+
+export async function getGardenPlannerImage(plants: string[], img_url: string, captchaToken: string): Promise<{ url: string | null, error?: string }> {
+    const captchaOk = await verifyCaptcha(captchaToken)
+    if (!captchaOk) return { url: null, error: 'CAPTCHA_FAILED' }
+
     const allowed = await validateCount()
     if (!allowed) return { url: null, error: 'TOO_MANY_REQUESTS' }
 

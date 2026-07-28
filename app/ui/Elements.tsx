@@ -161,7 +161,7 @@ export function GeneratedImage({ label, comment, src, alt }: { label: string; co
              <h2 className="text-2xl pt-2 leading-tight font-semibold text-green-900">{label}</h2>
              <Description>{comment}</Description>
 
-            <Image
+            <img
                 src={src}
                 alt={alt}
                 className="w-full rounded-xl border border-stone-200 shadow-md cursor-zoom-in"

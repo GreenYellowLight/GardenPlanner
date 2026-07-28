@@ -1,15 +1,14 @@
-export {};
-
-
 import postgres from 'postgres';
 
-/*
 // Original plan was to use Bunnings' api. Did not work out so doing this instead
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 
 export async function GET() {
+
+  if (process.env.NEXT_PUBLIC_DEVELOPER_MODE !== 'true') return new Response(null, { status: 403 });
+
+
+  const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
   try {
     await sql`DROP TABLE IF EXISTS generation_log`;
     await sql`DROP TABLE IF EXISTS plant`;
@@ -121,4 +120,3 @@ export async function GET() {
 }
 
 
-*/

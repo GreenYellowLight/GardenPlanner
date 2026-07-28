@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import type { Plant } from "@/app/lib/types";
 import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES, BASE_PATH } from "../lib/constants";
@@ -35,6 +36,8 @@ export default function GeneratePlan({ selected }: Props) {
   const [generating, setGenerating] = useState(false);
   const [generatingFuture, setGeneratingFuture] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<HCaptcha>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
 
@@ -62,8 +65,10 @@ export default function GeneratePlan({ selected }: Props) {
       }
 
       const plantNames = selected.map(s => s.plant.name)
-      const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, uploadData.url)
-      if (actionError === 'TOO_MANY_REQUESTS') {
+      const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, uploadData.url, captchaToken!)
+      if (actionError === 'CAPTCHA_FAILED') {
+        setError('CAPTCHA verification failed. Please try again.')
+      } else if (actionError === 'TOO_MANY_REQUESTS') {
         setError(RATE_LIMIT_MSG)
       } else {
         setGeneratedImage(resultUrl)
@@ -80,6 +85,8 @@ export default function GeneratePlan({ selected }: Props) {
       setError('Something went wrong. Please try again.')
     } finally {
       setGenerating(false);
+      captchaRef.current?.resetCaptcha()
+      setCaptchaToken(null)
     }
   }
 
@@ -97,7 +104,7 @@ export default function GeneratePlan({ selected }: Props) {
     }
   }
 
-  const canGenerate = !generating && !!photo && selected.length > 0 && !generatedImage
+  const canGenerate = !generating && !!photo && selected.length > 0 && !generatedImage && (!!captchaToken || process.env.NEXT_PUBLIC_DEVELOPER_MODE === 'true')
 
   const hint =
     !photo && selected.length === 0 ? 'Add some plants and a photo before generating.' :
@@ -136,6 +143,15 @@ export default function GeneratePlan({ selected }: Props) {
       )}
 
       {hint && <p className="mt-4 text-sm text-red-600">{hint}</p>}
+
+      <div className="mt-4">
+        <HCaptcha
+          ref={captchaRef}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+          onVerify={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)}
+        />
+      </div>
 
       <button
         onClick={handleGenerate}
