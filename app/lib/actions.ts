@@ -43,9 +43,19 @@ export async function verifyCaptcha(token: string): Promise<boolean> {
     return data.success === true
 }
 
+async function validatePlantNames(names: string[]): Promise<boolean> {
+    if (names.length === 0) return false
+    const rows = await sql`SELECT name FROM plant WHERE name = ANY(${names})`
+    const validNames = new Set(rows.map(row => row.name))
+    return names.every(name => validNames.has(name))
+}
+
 export async function getGardenPlannerImage(plants: string[], img_url: string, captchaToken: string): Promise<{ url: string | null, error?: string }> {
     const captchaOk = await verifyCaptcha(captchaToken)
     if (!captchaOk) return { url: null, error: 'CAPTCHA_FAILED' }
+
+    const plantsOk = await validatePlantNames(plants)
+    if (!plantsOk) return { url: null, error: 'Error' }
 
     const allowed = await validateCount()
     if (!allowed) return { url: null, error: 'TOO_MANY_REQUESTS' }
