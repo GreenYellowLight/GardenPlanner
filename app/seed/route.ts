@@ -116,6 +116,8 @@ export async function GET() {
       { error: (error as Error).message },
       { status: 500 }
     );
+  } finally {
+    await sql.end();
   }
 }
 

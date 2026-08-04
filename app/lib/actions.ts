@@ -1,16 +1,16 @@
 'use server'
 import { fal } from "@fal-ai/client";
-import postgres from 'postgres'
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' })
+import { sql } from './db'
 
 const GENERATION_PERIOD = 60 // over how many minutes from now in the past to cap the number of images generated 
 const GENERATION_LIMIT = 3 // how many images can be generated each GENERATION_PERIOD
 
 
-// Don't allow more that GENERATION_LIMIT requests per GENERATION_PERIOD
+/**
+ * Don't allow more that GENERATION_LIMIT requests per GENERATION_PERIOD
+ */
 export async function validateCount(): Promise<boolean> {
-    await sql`DELETE FROM generation_log WHERE created_at < NOW() - INTERVAL '30 days'` // keep a record incase need to review the past
+    await sql`DELETE FROM generation_log WHERE created_at < NOW() - INTERVAL '30 days'` // incase need to review the past
 
     const result = await sql`
         SELECT COUNT(*) as count
@@ -43,7 +43,7 @@ export async function verifyCaptcha(token: string): Promise<boolean> {
     return data.success === true
 }
 
-async function validatePlantNames(names: string[]): Promise<boolean> {
+export async function validatePlantNames(names: string[]): Promise<boolean> {
     if (names.length === 0) return false
     const rows = await sql`SELECT name FROM plant WHERE name = ANY(${names})`
     const validNames = new Set(rows.map(row => row.name))

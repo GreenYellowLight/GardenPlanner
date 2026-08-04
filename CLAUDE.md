@@ -10,9 +10,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev        # start dev server
 pnpm build      # production build
 pnpm lint       # ESLint
+pnpm test       # Jest
+pnpm test:watch # Jest, watch mode
 ```
 
-There are no tests. To seed the database, hit `GET /seed` in the browser or with curl after the dev server is running.
+To seed the database, hit `GET /seed` in the browser or with curl after the dev server is running.
 
 ## Environment
 
@@ -29,7 +31,7 @@ This is a Next.js 16 app (App Router) with a Postgres database and OpenAI integr
 - `app/api/generate/route.ts` — POST endpoint that takes selected plants + optional base64 photo. If a photo is provided, it calls `gpt-4o` for a text description, then feeds that into `dall-e-3` to generate a garden image. Returns a URL.
 - `app/page.tsx` — single-page client component ("use client"). Owns all state: plant browser, selection cart, photo upload, and generated image display.
 - `app/seed/route.ts` — destructive seed route (`DROP TABLE … CREATE … INSERT`). Run once to initialise the `plant` table with the full enum types.
-- `app/lib/actions.ts` — stub Server Action (`getGardenPlannerImage`), not yet wired to a real implementation.
+- `app/lib/actions.ts` — Server Actions including `getGardenPlannerImage`, which validates submitted plant names against the `plant` table before using them in the image-generation prompt.
 - `app/testai/page.tsx` — dev scratch page for testing the AI flow against a static image.
 
 **Database schema** (created by the seed route):
