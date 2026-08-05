@@ -2,6 +2,11 @@ import { BASE_PATH } from './app/lib/constants';
 
 const nextConfig: import('next').NextConfig = {
   basePath: BASE_PATH,
+  typescript: {
+    // Keep test files out of the production type-check; tsconfig.json (used by
+    // the editor and `pnpm test`) still includes them for path-alias resolution.
+    tsconfigPath: './tsconfig.build.json',
+  },
   images: {
     remotePatterns: [
       new URL(process.env.NEXT_PUBLIC_S3_BASE_URL + "/**"),
