@@ -4,7 +4,7 @@ import LeafBackground from "@/app/ui/LeafBackground";
 import { lusitana } from "@/app/ui/fonts";
 
 export const metadata: Metadata = {
-  title: "Garden Planner",
+  title: "Garden Planner (cache test)",
   description: "Plan your next garden"
 }
 
