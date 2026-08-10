@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-     <html lang="en" className="h-full antialiased">
+     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
        <body className={`${lusitana.className} min-h-full flex flex-col bg-stone-50`}>
          <LeafBackground />
          <div className="relative z-10 flex flex-col flex-1">{children}</div>
