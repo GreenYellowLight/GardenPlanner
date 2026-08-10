@@ -1,7 +1,6 @@
-import { BASE_PATH } from './app/lib/constants';
+import { withMicrofrontends } from '@vercel/microfrontends/next/config';
 
 const nextConfig: import('next').NextConfig = {
-  basePath: BASE_PATH,
   typescript: {
     // Keep test files out of the production type-check; tsconfig.json (used by
     // the editor and `pnpm test`) still includes them for path-alias resolution.
@@ -15,14 +14,14 @@ const nextConfig: import('next').NextConfig = {
   experimental: {
     serverActions: {
 
-      // This repo intended to be on /garden-planner of another domain.
+      // This app is served under /garden-planner via Vercel Microfrontends.
       // Server Actions compare the `Origin` header to the `Host` header to
-      // prevent CSRF. When this app is reached via the homepage's rewrite
-      // proxy (eg localhost:3000 -> localhost:3001), those headers won't match
-      // unless the proxy's origin is explicitly trusted here.
+      // prevent CSRF. During local dev, requests arrive through the
+      // microfrontends proxy (a different origin than this app's own dev
+      // server), so that origin needs to be explicitly trusted here.
       allowedOrigins: [process.env.ALLOWED_ORIGIN!],
     },
   },
 }
 
-export default nextConfig;
+export default withMicrofrontends(nextConfig);

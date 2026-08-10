@@ -4,10 +4,10 @@ import PlantBrowser from "@/app/ui/PlantBrowser";
 import SelectedPlants from "@/app/ui/SelectedPlants";
 import GeneratePlan from "@/app/ui/GeneratePlan";
 import { useSelectedPlants } from "@/app/lib/useSelectedPlants";
-import HowItWorks from "./ui/HowItWorks";
-import DemoExample from "./ui/DemoExample";
-import Header from "./ui/Header";
-import { MainPanel } from "./ui/Elements";
+import HowItWorks from "@/app/ui/HowItWorks";
+import DemoExample from "@/app/ui/DemoExample";
+import Header from "@/app/ui/Header";
+import { MainPanel } from "@/app/ui/Elements";
 
 
 export default function Page() {
