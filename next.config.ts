@@ -15,5 +15,5 @@ const nextConfig: import('next').NextConfig = {
 
 // export default withMicrofrontends(nextConfig);
 
-export default withMicrofrontends(nextConfig);
+export default nextConfig; 
 
