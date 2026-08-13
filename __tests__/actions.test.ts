@@ -21,7 +21,7 @@ import {
   verifyCaptcha,
   validatePlantNames,
 } from '@/app/lib/actions'
-import { GET as seedDatabase } from '@/app/seed/route'
+import { GET as seedDatabase } from '@/app/garden-planner/seed/route'
 import { sql } from '@/app/lib/db'
 
 
