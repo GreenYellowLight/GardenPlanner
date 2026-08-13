@@ -11,12 +11,18 @@ export async function GET() {
   const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
   try {
     await sql`DROP TABLE IF EXISTS generation_log`;
+    await sql`DROP TABLE IF EXISTS generation_pass`;
     await sql`DROP TABLE IF EXISTS plant`;
     await sql`DROP TYPE IF EXISTS shade_requirement`;
     await sql`DROP TYPE IF EXISTS origin_continent`;
 
     await sql`CREATE TABLE generation_log (
       id         SERIAL PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE generation_pass (
+      token      TEXT PRIMARY KEY,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`;
 

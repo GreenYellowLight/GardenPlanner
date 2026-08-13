@@ -1,5 +1,6 @@
 'use server'
 import { fal } from "@fal-ai/client";
+import { randomUUID } from 'crypto'
 import { sql } from './db'
 
 const GENERATION_PERIOD = 60 // over how many minutes from now in the past to cap the number of images generated 
@@ -30,6 +31,55 @@ async function editImage(prompt: string, image_url: string): Promise<string | nu
     return result.data.images?.[0]?.url ?? null
 }
 
+/**
+ * Enforces the generation rate limit, logging the attempt if allowed.
+ * Returns an error code to return to the caller, or null if allowed.
+ */
+async function checkRateLimit(): Promise<string | null> {
+    const allowed = await validateCount()
+    if (!allowed) return 'TOO_MANY_REQUESTS'
+
+    await sql`INSERT INTO generation_log DEFAULT VALUES`
+    return null
+}
+
+/**
+ * Verifies the captcha and enforces the generation rate limit. Returns an
+ * error code to return to the caller, or null if the request is allowed.
+ */
+async function validateGenerationRequest(captchaToken: string): Promise<string | null> {
+    const captchaOk = await verifyCaptcha(captchaToken)
+    if (!captchaOk) return 'CAPTCHA_FAILED'
+
+    return checkRateLimit()
+}
+
+/**
+ * hCaptcha tokens are single-use, so the follow-up "future" generation
+ * (chained automatically after a successful planner generation) can't
+ * re-verify the same token. Instead, a successful captcha-verified
+ * generation issues a short-lived, single-use pass that the follow-up
+ * request redeems in place of its own captcha check.
+ */
+const PASS_VALIDITY_MINUTES = 10
+
+async function issueGenerationPass(): Promise<string> {
+    const token = randomUUID()
+    await sql`INSERT INTO generation_pass (token) VALUES (${token})`
+    return token
+}
+
+async function redeemGenerationPass(pass: string): Promise<boolean> {
+    await sql`DELETE FROM generation_pass WHERE created_at < NOW() - (${PASS_VALIDITY_MINUTES} * INTERVAL '1 minute')`
+
+    const rows = await sql`SELECT token FROM generation_pass WHERE token = ${pass}`
+    if (rows.length === 0) return false
+
+    await sql`DELETE FROM generation_pass WHERE token = ${pass}`
+
+    return true
+}
+
 export async function verifyCaptcha(token: string): Promise<boolean> {
 
     if (process.env.NEXT_PUBLIC_DEVELOPER_MODE === 'true')  return true
@@ -50,17 +100,12 @@ export async function validatePlantNames(names: string[]): Promise<boolean> {
     return names.every(name => validNames.has(name))
 }
 
-export async function getGardenPlannerImage(plants: string[], img_url: string, captchaToken: string): Promise<{ url: string | null, error?: string }> {
-    const captchaOk = await verifyCaptcha(captchaToken)
-    if (!captchaOk) return { url: null, error: 'CAPTCHA_FAILED' }
-
+export async function getGardenPlannerImage(plants: string[], img_url: string, captchaToken: string): Promise<{ url: string | null, pass?: string, error?: string }> {
     const plantsOk = await validatePlantNames(plants)
     if (!plantsOk) return { url: null, error: 'Error' }
 
-    const allowed = await validateCount()
-    if (!allowed) return { url: null, error: 'TOO_MANY_REQUESTS' }
-
-    await sql`INSERT INTO generation_log DEFAULT VALUES`
+    const genError = await validateGenerationRequest(captchaToken)
+    if (genError) return { url: null, error: genError }
 
     const plantNames = plants.join(', ')
     const prompt = `You are editing a garden photo. Add each of the following plants exactly once, all must be clearly visible and
@@ -69,10 +114,19 @@ export async function getGardenPlannerImage(plants: string[], img_url: string, c
   or other features. The plants should look healthy with intact leaves and roots settled into the soil. Do not alter
    any existing structures, lawn, paths, or background features.`
 
-    return { url: await editImage(prompt, img_url) }
+    const url = await editImage(prompt, img_url)
+    if (!url) return { url: null }
+
+    return { url, pass: await issueGenerationPass() }
 }
 
-export async function getGardenFutureImage(firstImageUrl: string): Promise<{ url: string | null}> {
+export async function getGardenFutureImage(firstImageUrl: string, pass: string): Promise<{ url: string | null, error?: string }> {
+    const passOk = await redeemGenerationPass(pass)
+    if (!passOk) return { url: null, error: 'INVALID_PASS' }
+
+    const rateLimitError = await checkRateLimit()
+    if (rateLimitError) return { url: null, error: rateLimitError }
+
     const prompt = `Generate what this exact garden looks like 3 years later.
     All plants should be visibly larger and fully mature — with
   significantly more foliage, spread, and height than when first planted. Each plant must

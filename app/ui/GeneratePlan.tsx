@@ -64,7 +64,7 @@ export default function GeneratePlan({ selected }: Props) {
       }
 
       const plantNames = selected.map(s => s.plant.name)
-      const { url: resultUrl, error: actionError } = await getGardenPlannerImage(plantNames, uploadData.url, captchaToken!)
+      const { url: resultUrl, pass, error: actionError } = await getGardenPlannerImage(plantNames, uploadData.url, captchaToken!)
       if (actionError === 'CAPTCHA_FAILED') {
         setError('CAPTCHA verification failed. Please try again.')
       } else if (actionError === 'TOO_MANY_REQUESTS') {
@@ -74,8 +74,14 @@ export default function GeneratePlan({ selected }: Props) {
         setGenerating(false)
         setGeneratingFuture(true)
         try {
-          const { url: futureUrl } = await getGardenFutureImage(resultUrl!)
-          setFutureImage(futureUrl)
+          const { url: futureUrl, error: futureError } = await getGardenFutureImage(resultUrl!, pass!)
+          if (futureError === 'TOO_MANY_REQUESTS') {
+            setError(RATE_LIMIT_MSG)
+          } else if (futureError) {
+            setError('Something went wrong. Please try again later.')
+          } else {
+            setFutureImage(futureUrl)
+          }
         } finally {
           setGeneratingFuture(false)
         }
