@@ -81,7 +81,7 @@ export default function GeneratePlan({ selected }: Props) {
         }
       }
     } catch {
-      setError('Something went wrong. Please try again.')
+      setError('Something went wrong. Please try again later.')
     } finally {
       setGenerating(false);
       captchaRef.current?.resetCaptcha()
