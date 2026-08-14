@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import type { Plant } from "@/app/lib/types";
-import { getGardenPlannerImage, getGardenFutureImage, validateCount } from "../lib/actions";
+import { getGardenPlannerImage, getGardenFutureImage } from "../lib/actions";
 import { MAX_PHOTO_MB, MAX_PHOTO_BYTES, BASE_PATH } from "../lib/constants";
 import { Description, SectionHeader, Spinner, GeneratedImage } from "./Elements";
 
@@ -46,11 +46,6 @@ export default function GeneratePlan({ selected }: Props) {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 0);
 
     try {
-      const allowed = await validateCount()
-      if (!allowed) {
-        setError(RATE_LIMIT_MSG)
-        return
-      }
 
       const formData = new FormData()
       formData.append('photo', photo!)
