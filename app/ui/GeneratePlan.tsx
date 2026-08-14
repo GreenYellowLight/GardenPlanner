@@ -8,6 +8,7 @@ import { MAX_PHOTO_MB, MAX_PHOTO_BYTES, BASE_PATH } from "../lib/constants";
 import { Description, SectionHeader, Spinner, GeneratedImage } from "./Elements";
 
 const RATE_LIMIT_MSG = 'Too many gardens generated recently — please try again in an hour.'
+const DEFAULT_ERROR = 'Something went wrong. Please try again later.'
 
 function PhotoOption({ label, sub, selected, onChange, capture, className = '' }: {
   label: string; sub: string; selected: boolean;
@@ -38,9 +39,6 @@ export default function GeneratePlan({ selected }: Props) {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaRef = useRef<HCaptcha>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
-
-
 
   async function handleGenerate() {
     setGenerating(true);
@@ -78,7 +76,7 @@ export default function GeneratePlan({ selected }: Props) {
           if (futureError === 'TOO_MANY_REQUESTS') {
             setError(RATE_LIMIT_MSG)
           } else if (futureError) {
-            setError('Something went wrong. Please try again later.')
+            setError(DEFAULT_ERROR)
           } else {
             setFutureImage(futureUrl)
           }
@@ -87,7 +85,7 @@ export default function GeneratePlan({ selected }: Props) {
         }
       }
     } catch {
-      setError('Something went wrong. Please try again later.')
+      setError(DEFAULT_ERROR)
     } finally {
       setGenerating(false);
       captchaRef.current?.resetCaptcha()

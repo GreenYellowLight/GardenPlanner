@@ -61,7 +61,7 @@ async function validateGenerationRequest(captchaToken: string): Promise<string |
  * generation issues a short-lived, single-use pass that the follow-up
  * request redeems in place of its own captcha check.
  */
-const PASS_VALIDITY_MINUTES = 10
+const PASS_VALIDITY_MINUTES = 2
 
 async function issueGenerationPass(): Promise<string> {
     const token = randomUUID()
