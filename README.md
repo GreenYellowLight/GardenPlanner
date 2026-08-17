@@ -1,6 +1,6 @@
 # Garden Planner
 
-Plan your garden with ai. Take a photo of an area, select some plants and see how your garden could look if in a few years with these new plants.
+Plan your garden with ai. Take a photo of an area, select some plants and see how your garden could look in a few years with these new plants.
 
 Located at [lindenbeaumont.com/garden-planner](https://lindenbeaumont.com/garden-planner).
 
