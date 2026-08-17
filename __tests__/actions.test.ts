@@ -2,23 +2,9 @@
  * @jest-environment node
  */
 
-// `postgres` and `@fal-ai/client` are mocked so these tests never touch the real
-// database or the (paid) fal.ai image API. Nothing is inserted, so nothing needs
-// undoing — the in-memory `generationCount` below stands in for `generation_log`.
 
-// jest.mock('postgres', () => {
-//   const sql = jest.fn()
-//   return { __esModule: true, default: () => sql }
-// })
-
-// jest.mock('@fal-ai/client', () => ({
-//   fal: { subscribe: jest.fn() },
-// }))
-
-import { fal } from '@fal-ai/client'
 import {
   validateCount,
-  verifyCaptcha,
   validatePlantNames,
 } from '@/app/lib/actions'
 import { GET as seedDatabase } from '@/app/garden-planner/seed/route'
