@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { Plant } from '@/app/lib/types';
-import { Description, SectionHeader, PlantSelection, Pagination } from "./Elements";
+import { Description, SectionHeader, PlantSelection, PlantSelectionSkeleton, Pagination } from "./Elements";
 import { BASE_PATH } from "@/app/lib/constants";
 
 const CONTINENTS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
@@ -15,26 +15,31 @@ type Props = {
 };
 
 export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
-  const [plants, setPlants] = useState<Plant[]>([]);
   const [shade, setShade] = useState("");
   const [search, setSearch] = useState("");
   const [continent, setContinent] = useState("");
   const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
+  // Results are tagged with the query they came from, so `loading` is simply
+  // "what we're holding doesn't match what's being asked for"
+  const [result, setResult] = useState<{ query: string; plants: Plant[]; pages: number } | null>(null);
+
+  const query = new URLSearchParams({ page: String(page), search, continent, shade }).toString();
+  const loading = result?.query !== query;
+  const plants = result?.plants ?? [];
+  const pages = result?.pages ?? 1;
 
   useEffect(() => {
-    const params = new URLSearchParams({ page: String(page), search, continent, shade });
-    fetch(`${BASE_PATH}/api/plants?${params}`)
+    let stale = false
+    fetch(`${BASE_PATH}/api/plants?${query}`)
       .then((r) => r.json())
       .then((data) => {
-        setPlants(data.plants ?? [])
-        setPages(data.pages ?? 1)
+        if (!stale) setResult({ query, plants: data.plants ?? [], pages: data.pages ?? 1 })
       })
       .catch(() => {
-        setPlants([])
-        setPages(1)
+        if (!stale) setResult({ query, plants: [], pages: 1 })
       })
-  }, [page, search, continent, shade]);
+    return () => { stale = true }
+  }, [query]);
 
   return (
     <div>
@@ -67,9 +72,13 @@ export default function PlantBrowser({ selected, onAdd, onRemove }: Props) {
         </select>
       </div>
 
-      <PlantSelection plants={plants} selected={selected} onAdd={onAdd} onRemove={onRemove} />
+      {loading ? (
+        <PlantSelectionSkeleton />
+      ) : (
+        <PlantSelection plants={plants} selected={selected} onAdd={onAdd} onRemove={onRemove} />
+      )}
 
-      {pages > 1 && (
+      {!loading && pages > 1 && (
         <Pagination
           page={page}
           pages={pages}

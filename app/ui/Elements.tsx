@@ -88,7 +88,7 @@ export function PlantSelection({ plants, selected, onAdd, onRemove}: PlantSelect
     }
 
     return (
-          <div className="border border-stone-200 rounded-xl overflow-hidden divide-y divide-stone-100">
+      <PlantList>
         {plants.length === 0 ? (
           <p className="text-center text-stone-500 py-10">No plants found</p>
         ) : (
@@ -120,9 +120,40 @@ export function PlantSelection({ plants, selected, onAdd, onRemove}: PlantSelect
             )
           })
         )}
-      </div>
+      </PlantList>
     )
 
+}
+
+function PlantList({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="border border-stone-200 rounded-xl overflow-hidden divide-y divide-stone-100">
+            {children}
+        </div>
+    )
+}
+
+// Widths cycle rather than being random so server and client markup match
+const SKELETON_NAME_WIDTHS = ["w-32", "w-40", "w-28", "w-44", "w-36"]
+const SKELETON_META_WIDTHS = ["w-48", "w-40", "w-52", "w-44", "w-36"]
+
+export function PlantSelectionSkeleton({ rows = 10 }: { rows?: number }) {
+    return (
+        <PlantList>
+            {Array.from({ length: rows }, (_, i) => (
+                <div key={i} className="flex items-center px-4 py-3 animate-pulse">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="w-16 h-16 rounded-xl bg-stone-200 flex-shrink-0" />
+                        <div className="min-w-0">
+                            <div className={`h-4 rounded bg-stone-200 ${SKELETON_NAME_WIDTHS[i % SKELETON_NAME_WIDTHS.length]}`} />
+                            <div className={`h-3 mt-2 rounded bg-stone-100 ${SKELETON_META_WIDTHS[i % SKELETON_META_WIDTHS.length]}`} />
+                        </div>
+                    </div>
+                    <div className="ml-4 h-8 w-20 rounded-lg bg-stone-200 flex-shrink-0" />
+                </div>
+            ))}
+        </PlantList>
+    )
 }
 
 export function QtyStepper({ qty, onAdd, onRemove }: { qty: number; onAdd: () => void; onRemove: () => void }) {
